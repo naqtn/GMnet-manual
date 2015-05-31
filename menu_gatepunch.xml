@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This XML tree contains the subpages of the main manual page (the index).
+I think this XML explains itself.
+-->
+<menu>
+    <entry type="page" name="index">Index</entry>
+</menu>

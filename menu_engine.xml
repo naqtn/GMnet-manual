@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This XML tree contains the subpages of the engine manual page (the index).
+I think this XML explains itself.
+Page links are built like this:
+<pages root>/ENGINE/<folder entry (if not toplevel)>/<page entry>.md
+More levels are currently not supported, but if you think we would benefit by that, please open a ticket.
+-->
+
+
+<menu>
+    <entry type="page" name="index">Index</entry>
+    <entry type="page" name="versiondifferences">Differences between ENGINE/CORE</entry>
+    <entry type="folder" title="Tutorial" name="tutorial">
+        <entry type="page" name="0_whatishtme">0. What is GMnet ENGINE?</entry>
+        <entry type="page" name="1_config">1. Basic configuration</entry>
+        <entry type="page" name="2_udphp1">2. PLUS - Setup GMnet PUNCH</entry>
+        <entry type="page" name="3_udphp2">3. PLUS - Hosting a master server</entry>
+        <entry type="page" name="4_starting">4. Starting the engine</entry>
+        <entry type="page" name="5_platformer">5. Setting up the basic platformer</entry>
+        <entry type="page" name="6_networkcontroller">6. The network controller</entry>
+        <entry type="page" name="7_player">7. Adding a player</entry>
+        <entry type="page" name="8_doors">8. A second room and doors</entry>
+        <entry type="page" name="9_playerlist">9. Showing a list of players</entry>
+        <entry type="page" name="10_time">10. Adding day/night</entry>
+        <entry type="page" name="11_chat">11. Creating a chat system</entry>
+        <entry type="page" name="12_end">12. Conclusion / What's next</entry>
+        <entry type="page" name="13_lobby">BONUS 1 - PLUS - ONLINE lobby</entry>
+        <entry type="page" name="14_globalsync">BONUS 2 - Global Sync</entry>
+        <entry type="page" name="15_lanlobby">BONUS 3 - LAN lobby</entry>
+        <entry type="page" name="16_events">BONUS 4 - Event Handlers for Connecting/Disconnecting</entry>
+        <entry type="page" name="17_rpc">BONUS 5 - RPC</entry>
+    </entry>
+    <entry type="folder" title="Important Concepts" name="concepts">
+        <entry type="page" name="instances">Local and remote Instances</entry>
+        <entry type="page" name="scope">Instance scope and rooms</entry>
+        <entry type="page" name="playerhashes">Players and Playerhashes</entry>
+        <entry type="page" name="states">States of the engine</entry>
+        <entry type="page" name="vargroups">Variable Groups</entry>
+        <entry type="page" name="instancevars">mp_map_syncIn and mp_map_syncOut</entry>
+        <entry type="page" name="synctypes">VarGroup SyncTypes (mp_type)</entry>
+        <entry type="page" name="tolerance">Tolerance</entry>
+        <entry type="page" name="buffer">Buffer types</entry>
+        <entry type="page" name="chat">CHAT API</entry>
+        <entry type="page" name="udphp">PLUS - GMnet PUNCH</entry>
+        <entry type="page" name="mediation">PLUS - Master Server (GMnet GATE.PUNCH)</entry>
+        <entry type="page" name="signedpackets">Signed packets</entry>
+        <entry type="page" name="debugoverlay">The debug overlay</entry>
+        <entry type="page" name="htmt">PLUS - GMnet GATE.TESTER</entry>
+    </entry>
+    <entry type="folder" title="Important Functions" name="functions">
+        <entry type="folder" title="Sync Functions" name="sync">
+            <entry type="page" name="mp_sync">mp_sync</entry>
+            <entry type="page" name="mp_unsync">mp_unsync</entry>
+            <entry type="page" name="mp_stayAlive">mp_stayAlive</entry>
+            <entry type="page" name="mp_add">mp_add</entry>
+            <entry type="page" name="mp_addPosition">mp_addPosition</entry>
+            <entry type="page" name="mp_addBuiltinBasic">mp_addBuiltinBasic</entry>
+            <entry type="page" name="mp_addBuiltinPhysics">mp_addBuiltinPhysics</entry>
+            <entry type="page" name="mp_setType">mp_setType</entry>
+            <entry type="page" name="mp_tolerance">mp_tolerance</entry>
+            <entry type="page" name="mp_map_syncIn">mp_map_syncIn</entry>
+            <entry type="page" name="mp_map_syncOut">mp_map_SyncOut</entry>
+        </entry>
+        <entry type="folder" title="Tools" name="tools">
+            <entry type="page" name="htme_isLocal">htme_isLocal</entry>
+            <entry type="page" name="htme_clientIsConnected">htme_clientIsConnected</entry>
+            <entry type="page" name="htme_clientConnectionFailed">htme_clientConnectionFailed</entry>
+            <entry type="page" name="htme_isStarted">htme_isStarted</entry>
+            <entry type="page" name="htme_isServer">htme_isServer</entry>
+            <entry type="page" name="htme_getPlayers">htme_getPlayers</entry>
+            <entry type="page" name="htme_findPlayerInstance">htme_findPlayerInstance</entry>
+            <entry type="page" name="htme_getPlayerNumber">htme_getPlayerNumber</entry>
+            <entry type="page" name="htme_clientDisconnect">htme_clientDisconnect</entry>
+            <entry type="page" name="htme_serverDisconnect">htme_serverDisconnect</entry>
+            <entry type="page" name="htme_serverShutdown">htme_serverShutdown</entry>
+        </entry>
+        <entry type="folder" title="CHAT API" name="chat">
+            <entry type="page" name="mp_syncAsChatHandler">mp_syncAsChatHandler</entry>
+            <entry type="page" name="mp_chatGetQueue">mp_chatGetQueue</entry>
+            <entry type="page" name="mp_chatSend">mp_chatSend</entry>
+            <entry type="page" name="htme_chatGetMessage">htme_chatGetMessage</entry>
+            <entry type="page" name="htme_chatGetSender">htme_chatGetSender</entry>
+        </entry>
+        <entry type="folder" title="Online Lobby" name="lobby">
+            <entry type="page" name="udphp_downloadServerList">udphp_downloadServerList</entry>
+        </entry>
+        <entry type="folder" title="LAN Lobby" name="lanlobby">
+            <entry type="page" name="htme_startLANsearch">htme_startLANsearch</entry>
+        </entry>
+        <entry type="folder" title="Global Sync" name="globalsync">
+            <entry type="page" name="htme_globalGet">htme_globalGet</entry>
+            <entry type="page" name="htme_globalSet">htme_globalSet</entry>
+            <entry type="page" name="htme_globalSetFAST">htme_globalSetFAST</entry>
+        </entry>
+        <entry type="folder" title="Event Handlers" name="events">
+            <entry type="page" name="htme_serverEventHandlerConnecting">Connecting</entry>
+            <entry type="page" name="htme_serverEventHandlerDisconnecting">Disconnecting</entry>
+        </entry>
+        <entry type="folder" title="Configuration" name="config">
+            <entry type="page" name="htme_init">htme_init</entry>
+        </entry>
+    </entry>
+    <entry type="folder" title="More" name="more">
+        <entry type="page" name="extending">Extending the Engine / Advanced Use</entry>
+        <entry type="page" name="update">How to update</entry>
+    </entry>
+</menu>
