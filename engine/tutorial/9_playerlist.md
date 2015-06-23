@@ -10,7 +10,7 @@ This new object is actually not going to be added to the engine. This object wil
 
 The only thing we'll need is a **Draw-Event**.  
 Let's start with drawing the word "Players:" on screen:
-```javascript
+```gml
 draw_set_color(c_white);
 draw_text(40,35,"Players:");
 ```
@@ -22,7 +22,7 @@ Okay, cool, cool. But how on earth do we get all player instances? There are two
 
 In our case the first solution is the easiest. However we want to teach you what you can do with the engine, and so **we are going to use the second method**. There might be cases where looping through all instances of an object would be simply to much, for example if you have a race game with 2 players and 6 cpus and you only want to get data of the connected players.
 
-```javascript
+```gml
 var playerlist = htme_getPlayers();
 ```
 
@@ -30,7 +30,7 @@ This will give you a ``ds_list`` containing the hashes of all players. Each play
 
 To loop over this list, add the following for-loop:
 
-```javascript
+```gml
 for(var i = 0;i<ds_list_size(playerlist);i++) {
     var player = ds_list_find_value(playerlist,i);
 }
@@ -38,7 +38,7 @@ for(var i = 0;i<ds_list_size(playerlist);i++) {
 
 ``player`` will now be the playerhash of a player. We use this hash to get a player instance of this player. **Inside the for loop after ``var player =...`` insert the following:**
 
-```javascript
+```gml
 var instance = htme_findPlayerInstance(htme_obj_player,player);
 ```
 
@@ -48,7 +48,7 @@ Because that means we can't actually get the name of the player to display it th
 
 Because of this limitation we will simply show "(other room)" in a grey color, when the player instance does not exist:
 
-```javascript
+```gml
 if (instance != -1) {
     var name = (instance).name;
     var _image_blend = (instance).image_blend;
@@ -62,7 +62,7 @@ if (instance != -1) {
 
 **The following code will draw the sprite and the name:**
 
-```javascript
+```gml
 //Draw small player icon
 draw_sprite_ext(htme_spr_player,0,50,(i)*20+70,0.5,0.5,0,_image_blend,1);
 //Draw player name

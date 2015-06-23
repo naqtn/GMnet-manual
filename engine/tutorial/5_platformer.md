@@ -18,7 +18,7 @@ Create the object ``htme_obj_player`` and give it the sprite ``htme_spr_player``
 
 Into the **create-Event** put the following code:
 
-```javascript
+```gml
 ///Setup basic stuff for the demo platformer.
 self.pressed_jump = false;
 self.pressed_left = false;
@@ -39,7 +39,7 @@ The ``self.pressed...`` variables will store if our player pressed the buttons t
 
 Into the **step event** put the following code:
 
-```javascript
+```gml
 ///Perform platforming!
 //This is a very basic example of a platformer. You should not program your physics like this!
 
@@ -76,7 +76,7 @@ As you can see, we currently just put the button presses into the variables ``se
 
 Now create a **Collision with htme_obj_wall event** and put the following code in it:
 
-```javascript
+```gml
 ///Set speed to 0 when hitting a top wall
 if (!place_free(x, y-16)) {
     move_contact_solid(90,-1);
@@ -92,7 +92,7 @@ if (!place_free(x, y+16)) {
 
 Into the **draw event**, we will put some code to draw the name we randomly generated in the create event. First put "**draw self**"" into the event and then this code:
 
-```javascript
+```gml
 ///Draw nameplate
 draw_set_color(image_blend);
 draw_set_halign(fa_center);

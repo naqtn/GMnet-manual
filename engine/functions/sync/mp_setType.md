@@ -8,7 +8,7 @@ More information: [VarGroup SyncTypes (mp_type)](concepts/synctypes)
 
 ###Example
 
-```javascript
+```gml
 ///Create Event
 mp_sync();
 mp_addBuiltinPhysics("physics",10*room_speed);

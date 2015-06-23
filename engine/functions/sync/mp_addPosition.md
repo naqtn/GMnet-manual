@@ -9,7 +9,7 @@ The variables are:
 
 ###Example
 
-```javascript
+```gml
 ///Create Event
 mp_sync();
 mp_addPosition("pos",10*room_speed);;

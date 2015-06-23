@@ -8,7 +8,7 @@ More information: [Instance scope and rooms](concepts/scope).
 
 ###Example
 
-```javascript
+```gml
 ///Create Event
 mp_sync();
 mp_stayAlive();

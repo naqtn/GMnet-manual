@@ -10,7 +10,7 @@ So we are basicly done after this step. The rest of the tutorial is some more ad
 To set the player up, we only have to make minimal adjustments. **Create a new code block in the create event**, and insert it **before** the other block.
 
 Start the code block with 
-```javascript
+```gml
 mp_sync();
 ```
 
@@ -20,7 +20,7 @@ If you add one player instance to your room and connect 4 players togther, each 
 
 Now we need to tell the engine what variables to sync and how:
 
-```javascript
+```gml
 mp_addPosition("Pos",5*room_speed);
 ```
 
@@ -30,7 +30,7 @@ What we just added is a so called **variable group**. The group is called "Pos",
 
 Let's set **how the position should be synced**:
 
-```javascript
+```gml
 mp_setType("Pos",mp_type.SMART);
 ```
 
@@ -51,13 +51,13 @@ Now, the thing is, if we reset it every 5 seconds, it might happen that **the pl
 
 Let's add a little **tolerance range**. If the position at is **less than 20 pixels away from where it should be**, the other players should **not apply this change** locally, so it **doesn't flicker** that much:
 
-```javascript
+```gml
 mp_tolerance("Pos",20);
 ```
 
 Great. Position is set up. Now, **just to make sure**, let's also sync **the basic Game Maker physics and drawing variable**s:
 
-```javascript
+```gml
 /**
  * Tell the engine to add the basic drawing variables:
  * image_alpha,image_angle,image_blend,image_index,image_speed,image_xscale
@@ -77,7 +77,7 @@ mp_setType("basicPhysics",mp_type.SMART);
 We don't need to sync them that frequently. If we sync physics to frequently that might look weird and we are only syncing the basic Drawing stuff for the player color (``image_blend``) which doesn't change anyway, and the ``image_xscale`` and ``iamge_angle`` which controls how the player faces, which isn't that critical.
 
 Now we also want to **sync the name**:
-```javascript
+```gml
 mp_add("playerName","name",buffer_string,60*room_speed);
 mp_setType("playerName",mp_type.SMART);
 ```
@@ -92,7 +92,7 @@ We decide for a 60 seconds interval, because the name will never change. We coul
 
 Next up are the **controls**. Remember how we stored the button input in seperate variables? Well now you might know why:
 
-```javascript
+```gml
 mp_add("controls","pressed_jump,pressed_left,pressed_right",buffer_bool,1);
 ```
 
@@ -112,7 +112,7 @@ If you don't know what any of that means what I just said, don't worry. It's com
 
 For every object where you use ``mp_add`` add the following to the **begin step** event:
 
-```javascript
+```gml
 mp_map_syncIn("name",self.name);
 mp_map_syncIn("pressed_jump",self.pressed_jump);
 mp_map_syncIn("pressed_left",self.pressed_left);
@@ -125,7 +125,7 @@ All changes to these variables need to be made **BEFORE** using these functions.
 
 In the **end step** event add the following code to retrieve the variables again:
 
-```javascript
+```gml
 self.name = mp_map_syncOut("name", self.name);
 self.pressed_jump = mp_map_syncOut("pressed_jump", self.pressed_jump);
 self.pressed_left = mp_map_syncOut("pressed_left", self.pressed_left);
@@ -135,7 +135,7 @@ self.pressed_right = mp_map_syncOut("pressed_right", self.pressed_right);
 ###Setting up controls for synchonization
 
 Last thing we need to do, is to **move this code out of the step event** we created earlier:
-```javascript
+```gml
 self.pressed_jump = keyboard_check(vk_space);
 self.pressed_left = keyboard_check(vk_left);
 self.pressed_right = keyboard_check(vk_right);
@@ -143,7 +143,7 @@ self.pressed_right = keyboard_check(vk_right);
 
 **Simply remove it**. In begin step, **add the following code** **before** the other code:
 
-```javascript
+```gml
 if (htme_isLocal()) {
     self.pressed_jump = keyboard_check(vk_space);
     self.pressed_left = keyboard_check(vk_left);
@@ -153,7 +153,7 @@ if (htme_isLocal()) {
 
 It should now look like this:
 
-```javascript
+```gml
 if (htme_isLocal()) {
     self.pressed_jump = keyboard_check(vk_space);
     self.pressed_left = keyboard_check(vk_left);

@@ -10,7 +10,7 @@ Does NOT destroy local instances! You have to do that yourself when calling this
 
 ###Example
 
-```javascript
+```gml
 ///Step
 if (somethinghappend && htme_isLocal()) {
 	mp_unsync();

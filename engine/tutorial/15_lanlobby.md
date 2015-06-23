@@ -17,7 +17,7 @@ To test it, fire up a demo game on another PC in the network and start a server.
 
 In ``htme_init`` there is a new variable you need to change when creating your own game (keep the default for the demo project though, otherwise you can't join demo servers via the lobby):
 
-```javascript
+```gml
 /**
  *  Shortname of this game
  *  + version
@@ -41,7 +41,7 @@ Start the demo game and create a server. You will be asked to enter **the name o
 Let's open the **N-key** event of **htme_obj_menu** (this event creates the server).
 
 You'll find this part after the server has successfully been created:
-```javascript
+```gml
 htme_setData(2,get_string("How should this server be called (for the lobby)?","GMnet ENGINE Demo Server"));
 htme_setData(3,get_string("Enter a server description (for the lobby)?","A server created for the GMnet ENGINE demo project"));
 ```
@@ -56,7 +56,7 @@ A note for GMnet PUNCH users: The gamename is data string 1.
 By default the servers will broadcast their information to all PCs in the LAN each 15 seconds.
 You can change this in ``htme_init`` by changing the value of ``self.lan_interval``
 
-```javascript
+```gml
 /** 
  * Interval the servers broadcast data to the LAN, for the LAN lobby
  * @type real
@@ -71,7 +71,7 @@ Ah, the lobby. Finally we are ready to build it.
 The room of the lobby is the room ``htme_lanlobby``. This room only contains the object ``htme_obj_lanlobbydemo``. This object controls the lobby. Let's dive into it!
 
 ####The create event
-```javascript
+```gml
 self.game = "htme_demo121"
 //IF YOU USE YOUR OWN SERVER - Change self.game!
 
@@ -84,7 +84,7 @@ More information on this function can be found in the [usage page of htme_startL
 
 ####The Room end event
 
-```javascript
+```gml
 ///STOP LAN SEARCH
 htme_stopLANsearch();
 ```
@@ -92,7 +92,7 @@ This will stop searching for LAN servers. You should run this if your player lea
 
 ####The networking event
 
-```javascript
+```gml
 ///LOOKING FOR INCOMING SERVER BROADCASTS
 //htme_step doesn't do that btw!
 htme_networking_searchForBroadcasts();
@@ -113,7 +113,7 @@ This draws the actual server list.
 
 Let's analyze it:
 
-```javascript
+```gml
 ///Servers (Loop)
 var l = htme_getLANServers();
 for (var i = 0; i<4;i++) {
@@ -124,7 +124,7 @@ First, the list ``htme_getLANServers()`` is stored in the local variable ``l`` (
 
 Then it begins a loop that loops through the first 4 servers in the list we got by the master server, everything is in this loop and then it draws a nice little number for each server.
 
-```javascript
+```gml
     if (ds_exists(l,ds_type_list)) {
         if (ds_list_size(l)>i) {
 ```
@@ -133,7 +133,7 @@ Now, this is the interesting part.
 
 Ee check if it has at least as many entrys as the server we want to list. For this example we assume ``i`` is 1. That means it checks if there is atleast one server in the list. If yes, we have an entry we can now draw.
 
-```javascript
+```gml
             //Get stuff from the downloadlist
             var entry = l[| i];
             var ip = entry[? "ip"];
@@ -145,7 +145,7 @@ Ee check if it has at least as many entrys as the server we want to list. For th
 
 Now the entry (a ds_map) for our server is extracted from the list and we get the gamename, which is stored in data1, the ip, which is stored in the key "ip", the name of the server, which we stored in data2, and so on.
 
-```javascript
+```gml
             draw_text(70,85+80*i,servername+" | "+ip+":"+string(port));
             draw_text(70,115+80*i,description);
         }
@@ -164,7 +164,7 @@ Again, just some text, not important.
 
 Pressing 1-4 on the keyboard will connect to that game. Let's see how!
 
-```javascript
+```gml
 ///LOAD GAME SERVER ON SLOT 1
 var l = htme_getLANServers();
 if (ds_exists(l,ds_type_list)) {
@@ -176,7 +176,7 @@ if (ds_exists(l,ds_type_list)) {
 
 We again open the downloadlist and check if server 1 is in it, if yes we continue.
 
-```javascript
+```gml
         if (game != self.game) {
            //Not compatible game, exit
            show_message("Game server or version is incompatible!");
@@ -187,7 +187,7 @@ We again open the downloadlist and check if server 1 is in it, if yes we continu
 Remember the filtering variable we created in the create-event? We use it here to check if the server is a GMnet ENGINE demo game. If not we cancel.
 Although this is not needed if you filtered out other games with htme_startLANsearch like we did in the create event.
 
-```javascript
+```gml
         if (htme_clientStart(ip, port)) {
             //Wait for connection success!
             room_goto(htme_rom_connecting);

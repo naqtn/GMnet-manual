@@ -10,7 +10,7 @@ More information: [Bonus 2 - Global Sync (Sync a pool of variables editable by a
 
 ###Example
 
-```javascript
+```gml
 var value = htme_globalGet("name")
 
 if (is_undefined(value) {

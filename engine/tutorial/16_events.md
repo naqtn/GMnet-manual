@@ -5,14 +5,14 @@ In this chapter, we will teach you how you can do that. It is very easy.
 ###Basic example
 Let's say you have this script called ``scr_welcome``:
 
-```javascript
+```gml
 show_message("Cool! Someone connected!");
 return true; //- We will come to that later
 ```
 
 You want to execute this script, if someone connects. To do that simply use this code somewhere after the engine was started (obj_htme is created):
 
-```javascript
+```gml
 htme_serverEventHandlerConnecting( scr_welcome );
 ```
 
@@ -35,13 +35,13 @@ The **disconnect event** also contains this ds_map, but **additionally** has a k
 
 Here is an example how you can use this information. The server will refuse all connections from the local computer when using this script:
 
-```javascript
+```gml
 ///somewhere in your code
 htme_serverEventHandlerConnecting( scr_no_local_clients );
 htme_serverEventHandlerDisconnecting( scr_goodbye );
 ```
 
-```javascript
+```gml
 ///scr_no_local_clients(player_map);
 var player_map = argument0;
 
@@ -52,7 +52,7 @@ else {
 }
 ```
 
-```javascript
+```gml
 ///scr_goodbye(player_map);
 var player_map = argument0;
 

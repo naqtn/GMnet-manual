@@ -18,12 +18,12 @@ First we need an object to listen for RPCs and to send RPCs through.
 Create an object **obj_htme_rpc** with the events below, make it **persistent** and make sure it is created when clients have connected or a server was started, and get destroyed when the engine shuts down.
 
 ####Create Event
-```javascript
+```gml
 mp_syncAsChatHandler("RPC");
 ```
 
 #### Step Event
-```javascript
+```gml
 var queue = mp_chatGetQueue();
 while (ds_queue_size(queue) > 0) {
     htmerpc_recieve(ds_queue_dequeue(queue));
@@ -75,7 +75,7 @@ This script will need:
 
 So let's fill the script with this:
 
-```javascript
+```gml
 ///htmerpc_send(id,script,to,[argument0...13])
 /* Sends RPC calls to another player */
 
@@ -108,13 +108,13 @@ This "simply" processes the arguments for the script. All arguments for the RPC 
 
 We actually don't have that much to do now. We create the ds_map...
 
-```javascript
+```gml
 var rpc_command = ds_map_create();
 ```
 
 ...fill it...
 
-```javascript
+```gml
 rpc_command[? "id"] = rid;
 rpc_command[? "script"] = script;
 
@@ -130,7 +130,7 @@ for (var i = 0; i < rpc_argument_count; i++) {
 
 ...and convert it to json:
 
-```javascript
+```gml
 var message = json_encode(rpc_command);
 //After that we don't need the map anymore
 ds_map_destroy(rpc_command);
@@ -138,7 +138,7 @@ ds_map_destroy(rpc_command);
 
 That's all. We can now send the message. [mp_chatSend](functions/chat/mp_chatSend) allows a second argument called `to`. This is the hash of the player that should recieve the message. Exactly what we need! We use a with-Block to call the ``mp_chatSend`` with our RPC object
 
-```javascript
+```gml
 with (obj_htme_rpc) {
     mp_chatSend(message,to);
 }
@@ -151,7 +151,7 @@ What's the point of sending RPCs if we can't recieve them, right?
 
 In the step event we created earlier we already added a call to ``htmerpc_recieve`` with a message as argument. Let's create the script.
 
-```javascript
+```gml
 ///htmerpc_recieve(message)
 /* Processes RPC calls*/
 var message = htme_chatGetMessage(argument0);
@@ -162,7 +162,7 @@ Using [htme_chatGetMessage](functions/chat/htme_chatGetMessage) we take the raw 
 
 Let's decode the ds_map:
 
-```javascript
+```gml
 var rpc_command = json_decode(message);
 ```
 
@@ -172,7 +172,7 @@ Let us waste no time and execute the command. This can be done by combining ``as
 
 Because we also want to process the arguments, this may look a bit ridiculous now, but it works:
 
-```javascript
+```gml
 
 var rid = rpc_command[? "id"];
 var rpc_argument_count = rpc_command[? "argument_count"];
@@ -213,7 +213,7 @@ That means:
 
 Step 2 and 4 in script (add to the end of ``htmerpc_recieve``):
 
-```javascript
+```gml
 //Only send returned value if this RPC isn't already about a returned value (otherwise this would result in an endless loop)
 if (rpc_command[? "script"] != "htmerpc_callback") {
     //Send returned value back via RPC
@@ -232,13 +232,13 @@ But before we do that, we need somewhere to store those values. Let's use our ``
 
 Add it to the create event:
 
-```javascript
+```gml
 self.returnedValues = ds_map_create();
 ```
 
 Okay, so now let's create ``htmerpc_callback``, this script is actually incredibly simple:
 
-```javascript
+```gml
 ///htmerpc_callback(id,returnedValue)
 /* Reciveves the returned value of RPCs via RPC */
 
@@ -248,14 +248,14 @@ ds_map_add(obj_htme_rpc.returnedValues,argument0,argument1);
 
 That is all. Whenever a RPC call is sent, it will now add the returned value to the map. You can get it anywhere by using code like this:
 
-```javascript
+```gml
 ///Create event of some object - You can use htme_hash() to generate random ids
 self.rpc_id = htme_hash();
 htmerpc_send(self.rpc_id,my_cool_script,some_player_hash,0,"Test",3+2);
 ```
 
 ///Step event
-```javascript
+```gml
 var returnedValue = ds_map_find_value(obj_htme_rpc.returnedValues,self.rpc_id);
 
 //ds_map_find_value returns undefined if the key was not found -> if the returnedValue has not been recieved

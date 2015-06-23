@@ -7,7 +7,7 @@ This must be called before all other mp commands.
 
 ###Example
 
-```javascript
+```gml
 ///Create Event
 mp_sync();
 mp_addPosition("Pos",5*room_speed);

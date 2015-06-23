@@ -6,7 +6,7 @@ More information: [Tolerance](concepts/tolerance).
 
 ###Example
 
-```javascript
+```gml
 ///Create Event
 mp_sync();
 mp_addPosition("pos",1);

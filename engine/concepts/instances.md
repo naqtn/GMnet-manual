@@ -7,7 +7,7 @@ That means,** if you place one instance of object A in your room**, you will hav
 
 You can find out if a instance is local by using [htme_isLocal();](functions/tools/htme_isLocal) by using this if-Statement:
 
-```javascript
+```gml
 if (htme_isLocal()) {
  //Bla
 }

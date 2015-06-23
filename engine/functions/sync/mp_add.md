@@ -8,7 +8,7 @@ Please read this manual page when using mp_add: [mp_map_syncIn and mp_map_syncOu
 
 ###Example
 
-```javascript
+```gml
 ///Create Event
 mp_sync();
 mp_add("playerName","name",buffer_string,10*room_speed);;

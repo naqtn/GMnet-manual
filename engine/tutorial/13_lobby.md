@@ -24,7 +24,7 @@ You can also create a server and fire up a second game and see if you can join i
 
 In ``htme_init`` there is a new variable you need to change when creating your own game (keep the default for the demo project though, otherwise you can't join demo servers via the lobby):
 
-```javascript
+```gml
 /**
  *  Shortname of this game
  *  + version
@@ -46,7 +46,7 @@ Start the demo game and create a server. You will be asked to enter **the name o
 Let's open the **N-key** event of **htme_obj_menu** (this event creates the server).
 
 You'll find this part after the server has successfully been created:
-```javascript
+```gml
 htme_setData(2,get_string("How should this server be called (for the lobby)?","GMnet ENGINE Demo Server"));
 htme_setData(3,get_string("Enter a server description (for the lobby)?","A server created for the GMnet ENGINE demo project"));
 ```
@@ -64,7 +64,7 @@ Ah, the lobby. Finally we are ready to build it.
 The room of the lobby is the room ``udphhtme_lobby``. This room only contains the object ``obj_udphphtme_lobby``. This object controls the lobby. Let's dive into it!
 
 ####The create event
-```javascript
+```gml
 //IF YOU USE GMnet PUNCH - it will only let you connect to GMnet PUNCH servers:
 if (!script_exists(asset_get_index("htme_init"))) {
    self.game = "udphp_demo120"
@@ -88,7 +88,7 @@ You use your own filtering variables later when creating your lobby.
 
 ####The networking event
 
-```javascript
+```gml
 ///Waits for master server response
 udphp_downloadNetworking();
 ```
@@ -108,7 +108,7 @@ This draws the actual server list.
 
 Let's analyze it:
 
-```javascript
+```gml
 ///Servers (Loop)
 var l = global.udphp_downloadlist;
 for (var i = 0; i<4;i++) {
@@ -119,7 +119,7 @@ First, the list ``global.udphp_downloadlist`` is stored in the local variable ``
 
 Then it begins a loop that loops through the first 4 servers in the list we got by the master server, everything is in this loop and then it draws a nice little number for each server.
 
-```javascript
+```gml
     if (ds_exists(l,ds_type_list)) {
         if (ds_list_size(l)>i) {
 ```
@@ -128,7 +128,7 @@ Now, this is the interesting part.
 
 First we check if the downloadlist was already created (it get's created once the list has been downloaded). After that we check if it has at least as many entrys as the server we want to list. For this example we assume ``i`` is 1. That means it checks if there is atleast one server in the list. If yes, we have an entry we can now draw.
 
-```javascript
+```gml
             //Get stuff from the downloadlist
             var entry = l[| i];
             var ip = entry[? "ip"];
@@ -139,7 +139,7 @@ First we check if the downloadlist was already created (it get's created once th
 
 Now the entry (a ds_map) for our server is extracted from the list and we get the gamename, which is stored in data1, the ip, which is stored in the key "ip", the name of the server, which we stored in data2, and so on.
 
-```javascript
+```gml
             draw_text(70,85+80*i,servername+" | "+ip);
             draw_text(70,115+80*i,description);
         }
@@ -158,7 +158,7 @@ Again, just some text, not important.
 
 Pressing 1-4 on the keyboard will connect to that game. Let's see how!
 
-```javascript
+```gml
 ///LOAD GAME SERVER ON SLOT 1
 var l = global.udphp_downloadlist;
 if (ds_exists(l,ds_type_list)) {
@@ -170,7 +170,7 @@ if (ds_exists(l,ds_type_list)) {
 
 We again open the downloadlist and check if server 1 is in it, if yes we continue.
 
-```javascript
+```gml
         if (game != self.game) {
            //Not compatible game, exit
            show_message("Game server or version is incompatible!");
@@ -182,7 +182,7 @@ Remember the filtering variable we created in the create-event? We use it here t
 Please note, that this is propably not needed here, since we filtered out all, but our game in the create event, when we ran udphp_downloadServerList.
 
 
-```javascript
+```gml
         //====GMnet PUNCH DEMO ONLY
         if (!script_exists(asset_get_index("htme_init"))) {
            //This code is irrelevant for GMnet ENGINE and has been removed

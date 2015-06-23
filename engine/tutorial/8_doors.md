@@ -22,7 +22,7 @@ Now **create the object** ``htme_obj_door`` with the sprite``htme_spr_door``.
 
 Create a **Collsion with ``htme_obj_player`` event** and add this code:
 
-```javascript
+```gml
 ///CHECK IF DOOR ENTERED
 var isLocal;
 with (other) {isLocal = htme_isLocal();}

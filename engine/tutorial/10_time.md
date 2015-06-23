@@ -17,7 +17,7 @@ Let me show you how this works.
 
 **Create a new object** called ``htme_obj_time``. Add the following code to the beginning of the create event:
 
-```javascript
+```gml
 if (!htme_isServer()) {
    instance_destroy();
    exit;
@@ -31,7 +31,7 @@ Genius!
 
 After that bit of code we add the code to add our new object to the engine, which is of course never executed when created clientside:
 
-```javascript
+```gml
 mp_sync();
 mp_add("time","time",buffer_u16,20*room_speed);
 mp_setType("time",mp_type.SMART);
@@ -43,13 +43,13 @@ This way the** clients recieve the time every 20 seconds**. We are going to prog
 
 **Because we used ``mp_add``** we need to add the following code to **begin step**:
 
-```javascript
+```gml
 mp_map_syncIn("time",self.time);
 ```
 
 And this to **end step**
 
-```javascript
+```gml
 self.time = mp_map_syncOut("time", self.time);
 ```
 
@@ -59,7 +59,7 @@ The two things left are counting the time up and actually doing something with i
 
 Remember that, because we use ``mp_add``, all changes to our ``time`` variable need to be made before ``mp_map_syncIn`` is called. Because of that, create a new code block in **position 1 of begin step**:
 
-```javascript
+```gml
 ///Increase the time. If time is greater than 2000, set to zero.
 self.time++;
 if (self.time > 2000) self.time = 0;
@@ -73,7 +73,7 @@ If you want to perform actions on these server controlled instances only by the 
 
 Paste the following code into the **Draw-Event**. This will change the background color in the first room depending on time and display the time. Room 2 will be interior.
 
-```javascript
+```gml
 ///Draw background
 if (room == htme_rom_demo) {
     //Draw night/day
@@ -111,7 +111,7 @@ That's not good! We want our new time object to allways exist, no matter what!
 
 So, first, **set ``htme_obj_time`` to be persistent**. Now,** after the ``mp_sync();`` in the create event** add this:
 
-```javascript
+```gml
 mp_stayAlive();
 ```
 

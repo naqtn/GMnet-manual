@@ -10,7 +10,7 @@ More information: [Bonus 2 - Global Sync (Sync a pool of variables editable by a
 
 ###Example
 
-```javascript
+```gml
 var value = 1+1;
 htme_globalSetFAST("name",value,buffer_u8);
 ```

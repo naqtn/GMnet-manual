@@ -12,7 +12,7 @@ We are storing messages in the variable **message**. Or at least **the last** me
 
 Create a **Create-Event** and add the following code:
 
-```javascript
+```gml
 mp_syncAsChatHandler("Chat");
 
 //Setup variables
@@ -27,7 +27,7 @@ The ds_list **ouput** is used to **store all chat messages**.
 
 We are going to send a message when the player presses the C-key. Create a **press C-key Event**:
 
-```javascript
+```gml
 self.str_id = get_string_async("Send a chat message:","");
 ```
 
@@ -36,7 +36,7 @@ This script uses **``get_string_async``** to **ask the player for the chat messa
 ``get_string_async`` displays an input box where the player can input text without locking the game, like ``get_string`` would do. That's important, because the client or server will loose connection, if the game is locked.  
 Instead of returning the message, ``get_string_async`` returns a number, that we need to store. Inside the **Dialog Event, which can be found under Asynchronous** we are retrieving the message:
 
-```javascript
+```gml
 ///Process the message the player typed in
 var i_d = ds_map_find_value(async_load, "id");
 if (i_d == self.str_id) {
@@ -62,7 +62,7 @@ Messages are stored in a ds_queue, which is filled when new messages arrived. We
 
 **In the step event, add the following code**:
 
-```javascript
+```gml
 var queue = mp_chatGetQueue();
 while (ds_queue_size(queue) > 0) {
     var raw_message = ds_queue_dequeue(queue);
@@ -72,7 +72,7 @@ The first line uses [mp_chatGetQueue](functions/chat/mp_chatGetQueue) to get the
 
 This message however is "encoded", so we now use two functions to decode it:
 
-```javascript
+```gml
     var sender = htme_chatGetSender(raw_message);
     var message = htme_chatGetMessage(raw_message);
 ```
@@ -83,7 +83,7 @@ So now we have the message. What now?
 As you may remember, we gave all our player objects names. **We want to display the sent message together with the name of the player**.  
 To do that, we first have get the name of the player object using the player hash:
 
-```javascript
+```gml
     var player_instance = htme_findPlayerInstance(htme_obj_player,sender);
      if (player_instance != -1) {
          var name = (player_instance).name;
@@ -96,7 +96,7 @@ This is the same as in the [chapter 9](tutorial/9_playerlist), so check this pag
 
 The last thing we do, is we add the message we recieved to the list we created in the create event, together with who sent it, seperated by a ":".
 
-```javascript
+```gml
     //Add to list of chat output
     ds_list_add(self.output,name+": "+message);
 }
@@ -106,7 +106,7 @@ The last thing we do, is we add the message we recieved to the list we created i
 
 To display the chat, put the following code into the **draw-event**:
 
-```javascript
+```gml
 if (!htme_isLocal()) exit; //Again, exit if not our instance
 
 //Get an offset, so we draw the newest line on bottom

@@ -12,7 +12,7 @@ Summary of Global Sync's features:
 
 It's super simple. **To store a variable** in the Global Sync pool use this little code:
 
-```javascript
+```gml
 var value = 1+1;
 htme_globalSet("name",value,buffer_u8);
 ```
@@ -23,13 +23,13 @@ This will now sync to all clients immediately (using the SMART [syncType](concep
 
 You can **retrieve this variable** via this code **on all connected clients and the server**:
 
-```javascript
+```gml
 var value = htme_globalGet("name")
 ```
 
 Please note that this function may return ``undefined`` if it wasn't set by any of the clients/server yet, so check if it is defined:
 
-```javascript
+```gml
 if (is_undefined((htme_globalGet("name")) {
     //Nope, that wasn't set yet...
 }

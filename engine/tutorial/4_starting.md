@@ -15,7 +15,7 @@ Now **create** an object called **``htme_obj_menu``**. This will control our bas
 
 In the **Draw-Event** put the following code, that will simply display a message on how to proceed when starting the game:
 
-```javascript
+```gml
 draw_text(20,20,"Press N for new server and B to connect.");
 ```
 
@@ -25,7 +25,7 @@ Add two more events to it. One **B-key** event and a **N-key** event. **B** will
 
 In the **N-key** event add the following code:
 
-```javascript
+```gml
 ///START SERVER
 
 //Ask player for port
@@ -48,7 +48,7 @@ After that it **starts the server** using ``htme_serverStart(port,maxplayers)`` 
 
 In the **B-key** event add the following code:
 
-```javascript
+```gml
 ///CONECT TO A SERVER
 
 //Ask player for ip & port
@@ -71,7 +71,7 @@ Now instead of going to the game room when we are done, we actually want **the c
 **Create a room** called ``htme_rom_connecting`` that is just like the first one (but without the objects in it). Now **create the object** ``htme_obj_waitforclient`` and **place it** into the room.
 
 In the **Draw event** put the following code:
-```javascript
+```gml
 draw_text(20,20,"Connecting...");
 ```
 
@@ -79,7 +79,7 @@ This will display the message "Connecting..." after the player decided to start 
 
 In the **Step-Event** put the following:
 
-```javascript
+```gml
 ///Check if client is connected
 if (htme_clientIsConnected()) {
     room_goto(htme_rom_demo);

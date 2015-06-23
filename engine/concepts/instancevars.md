@@ -4,13 +4,13 @@ mp_map_syncIn and mp_map_syncOut
 Whenever you use [mp_add](functions/sync/mp_add), you need to do 2 things for each variable you sync with it:
 
 1. Add the following to the end step event:
-   ```javascript
+   ```gml
    self.VARIABLENAME = mp_map_syncOut("VARIABLENAME", self.VARIABLENAME);
    ```
    Where you replace "VARIABLENAME" with the name of your variable.
 
 2. Run the following code whenever you change that variable, we recommend doing this in the begin step event:
-   ```javascript
+   ```gml
    mp_map_syncIn("VARIABLENAME",self.VARIABLENAME);
    ```
    This also needs to be done at least once after you set up the engine if you don't put it in begin step.
@@ -22,7 +22,7 @@ Whenever you use [mp_add](functions/sync/mp_add), you need to do 2 things for ea
 
 The engine needs to know what variables it needs to sync. So if you execute this code:
 
-```javascript
+```gml
 mp_add("message","message",buffer_string,5);
 ```
 
@@ -30,7 +30,7 @@ Then we know you want to sync the variable message. The problem/limitation in Ga
 
 Well let me have an example. This works:
 
-```javascript
+```gml
 var instance; //Some valid instance
 var test = (instance).x;
 //Test will now have the x position of the instance as value
@@ -40,7 +40,7 @@ Now in that case we are directly accessing the x-Position of the instance. That'
 
 We don't know how your variables are called while coding, so we have to get them dynamically. Let's take the following exmaple:
 
-```javascript
+```gml
 var instance; //Some valid instance
 var variable = "x";
 //What now???
@@ -51,7 +51,7 @@ var test = (instance)[variable]; //? Doesn't work!
 
 There's no way in Game Maker Studio of doing that. That's why we use a ds_map to cache your instances variables. Because with a ds_map, that does work!
 
-```javascript
+```gml
 var map; //Some valid ds_map that belongs to your instance; That's what you change when using the syncIn and syncOut command
 var variable = "x";
 
