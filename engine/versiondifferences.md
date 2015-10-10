@@ -11,7 +11,7 @@ GMnet ENGINE を GMnet CORE にするには、
 GMnet PUNCH を無効にする（もしくは取り除く）と、
 マニュアルページの  **PLUS** がついているページは適用されなくなります。
 
-GMnet CORE （訳注：という名称）は、
+GMnet CORE （訳補：という名称）は、
 HappyTear Multiplayer Engine（これはこのプロダクトの古い名前）のフリー版として使われてきました。
 
 
@@ -23,7 +23,7 @@ Differences between GMnet ENGINE and GMnet CORE
 
 **GMnet CORE** is the core part of ENGINE without PUNCH and can not be downloaded on it's own. To turn GMnet ENGINE into GMnet CORE, simply set ``self.use_udphp`` to ``false`` in ``htme_init()``. You can then even remove all ``udphp_`` scripts then. All manual pages with **PLUS** do not apply to you, if you disabled or removed GMnet PUNCH.
 
-??? You can then ... then
-??? Excess twice "then" ?
+    ??? You can then ... then
+    ??? Excess twice "then" ?
 
 GMnet CORE used to be downloadable as the free version of the HappyTear Multiplayer Engine, the old name of this product.

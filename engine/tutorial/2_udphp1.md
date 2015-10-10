@@ -9,16 +9,7 @@ GMnet CORE を使うだけでは不十分です。
 もしあなたが Game Maker Marketplace から GMnet ENGINE をダウンロードしたのなら、
 詳しい事をサイトの [version differences](./versiondifferences) で参照すると良いでしょう。
 
-
-To understand this,
-you need to know,
-that whenever you want to play a game with someone
-there are three options:
-
-これを理解するには、
-知る必要
-誰かとゲームをするのであればいつでも
-３つの選択肢があります。
+これ（訳補：GMnet PUNCH）を理解するには、誰かと（訳補：オンライン）ゲームをするのであれば、３つの選択肢があるのを知る必要があります。
 
 * プレイ専用サーバ ：多くのシューティングゲーム（訳注：オンライン FPS 等を想定）のように
 * サーバへのポートフォワーディング：
@@ -41,7 +32,7 @@ there are three options:
 ** ``self.udphp_rctintv`` ** :
 どのくらいの頻度（ステップ数）で（訳注：ゲームの）サーバーが仲介サーバに再接続するかを表します。再接続して接続が維持されるされるようにします。ゲームサーバーが仲介サーバに接続されている事は重要なので、大きくしすぎないでください。規定値が適当でしょう。
 
-テスト専用ですが、仲介サーバをまだ持っていないのであれば、IP 95.85.63.183 ポート 6510 を使えます。
+テスト専用ですが、自分の仲介サーバをまだ持っていないのであれば IP 95.85.63.183 ポート 6510 を使えます。
 
 
 ---
@@ -49,7 +40,7 @@ there are three options:
 
 If you want *GMnet ENGINE* can be used to connect players **even if the do not forward ports in their firewall**.
 
-??? "the do not" > "they"?
+    ??? "the do not" > "they"?
 
 Please note, that you need GMnet ENGINE for this, simply using GMnet CORE is not enough. If you downloaded GMnet ENGINE from the Game Maker Marketplace, you are good to go (See the site on [version differences](./versiondifferences) for more information).
 

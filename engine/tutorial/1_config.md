@@ -1,8 +1,7 @@
 ##1. 基本設定
 
-このチュートリアルでは **シンプルなプラットフォームゲーム** （訳注：ジャンプアクションゲーム）に
-*GMnet ENGINE* が出来る事をデモンストレーションするイカしたちょっとした要素を追加したものを
-作ろうと思います。
+このチュートリアルでは **シンプルなプラットフォームゲーム** （訳注：ジャンプアクションゲーム）を作り、
+*GMnet ENGINE* が出来る事をデモンストレーションするイカしたちょっとした要素を追加しようと思います。
 
 このゲームには次のものを含めようと思います：
 
@@ -58,7 +57,7 @@ CONFIGURATION の下に最初に見つかるのは ``randomize();`` です。
 
 設定の次のステップでは、
 GMnet ENGINE（正確には GMnet PUNCH）が
-ファイヤーウォールの中からでも他のプレーヤーと接続できるようにすることを説明します。
+ファイヤーウォールの中からでも他のプレーヤーと接続できるようにする事を説明します。
 
 ---
 
@@ -76,9 +75,9 @@ Our platformer will have:
 ###Adding the engine to a project
 Before we can get started, add the asset to an empty project. Depending on what you want to do, you have three options.
 
-??? "an empty project"
-??? For "add the engine to your own game" case, it's not empty.
-??? So I suggest removing "empty"
+    ??? "an empty project"
+    ??? For "add the engine to your own game" case, it's not empty.
+    ??? So I suggest removing "empty"
  
 * If you want to **follow this tutorial yourself**, you should add **ALL scripts and sprites and the object ``obj_htme``** to your project.  
 * If you want to just **read through this tutorial** and test the demo game, **simply add everything**. 
@@ -87,8 +86,8 @@ Before we can get started, add the asset to an empty project. Depending on what 
 ###Configuration
 Great! No matter what option you chose, you propably want to take a look at the configuration, so let me walk you through.
 
-??? propably
-??? misspell of "probably"?
+    ??? propably
+    ??? misspell of "probably"?
 
 **The configuration can be found in ``scripts/htme/htme_init``**. The first things in this configurations are the enums that are used by the engine. Just ignore them and jump straight to ``CONFIGURATION``.
 
