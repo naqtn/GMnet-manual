@@ -1,3 +1,23 @@
+##0. GMnet ENGINE とは？
+
+*GMnet ENGINE* を使うと、
+*Game Maker: Studio* でネットワーク利用の知識をほとんど必要とせずに、
+マルチプレーヤーゲームを作ることができます。
+
+*GMnet ENGINE* 中の全て（の要素）は *Game Maker* の鍵となるコンセプト、
+つまり **Objects と Instances** に基づいています。
+
+あなたは、どの object のどの変数をどのように同期するかを、ただエンジンに指定するだけです。
+エンジンは、データの送受信とクライアントとサーバーのアーキテクチャ全体について面倒を見てくれます。
+
+つまり、あなたのゲームのネットワーク機能は簡単に扱えて、維持（メンテナンス）できるという事です。
+
+さ、時間を浪費するのはやめて、
+*GMnet ENGINE* を使って最初のゲームを作りはじめましょう。
+
+
+
+
 ##0. What is GMnet ENGINE?
 
 *GMnet ENGINE* allows you to make multiplayer games in *Game Maker: Studio* with nearly zero knowledge in networking.
