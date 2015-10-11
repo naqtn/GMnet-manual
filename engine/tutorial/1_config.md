@@ -18,10 +18,10 @@
 アセット（asset）を空のプロジェクトに加えます。
 何をしたいかによって、３つの選択肢があります。
 
-* もし **このチュートリアルにしたがって実際に作業を進める** のならば、 ** 全ての scripts と sprites それから ``obj_htme`` object ** をプロジェクトに追加する。
+* もし **このチュートリアルにしたがって実際に作業を進める** のならば、 ** 全ての scripts と sprites それから ``obj_htme`` object ** をプロジェクトに追加する。（訳注：sprites を入れるのは作成手順を省略するため。）
 * ただ **チュートリアルを読み通し** てデモゲームを試すだけなら、**ただ全部を追加する**。
 * 完全に空のプロジェクトから始める、もしくは **あなたのゲームにエンジンを追加する** のであれば、
-全ての ** *htme* フォルダ ** と ** *udphp* フォルダ ** を追加する（**not the *htme_demo* folders** は不用）。（訳注：htme, udphp フォルダは複数のリソースの下にあるのでそれら全て）
+全ての ** *htme* フォルダ ** と ** *udphp* フォルダ ** を追加する（**htme_demo folders** は不用）。（訳注：htme, udphp フォルダは複数のリソースの下にあるのでそれら全て）
 
 
 ### 設定
@@ -73,12 +73,15 @@ Our platformer will have:
 * A basic chat system
 
 ###Adding the engine to a project
+
+    ??? I suggest "importing" instead of "adding" to align with terminology of GameMaker: Studio UI
+
 Before we can get started, add the asset to an empty project. Depending on what you want to do, you have three options.
 
     ??? "an empty project"
     ??? For "add the engine to your own game" case, it's not empty.
     ??? So I suggest removing "empty"
- 
+
 * If you want to **follow this tutorial yourself**, you should add **ALL scripts and sprites and the object ``obj_htme``** to your project.  
 * If you want to just **read through this tutorial** and test the demo game, **simply add everything**. 
 * When starting completely blank or when you want to **add the engine to your own game**, add all **folders named *htme*** and ***udphp*** but **not the *htme_demo* folders**.

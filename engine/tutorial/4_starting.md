@@ -18,7 +18,7 @@
 
 このチュートリアルでは、
 プログラムを（訳補：複雑にせず）ごく基本的な状態を維持するよう努め、**他のビューは使わない** ようにします。
- **background color** は **black** にして room の大きさは **800*600** ピクセルにします。
+ **background color** は **black** にして room の大きさは ** 800×600 ** ピクセルにします。
 
 **``obj_htme``** を room に追加します。
 この object をゲームの最初の room で作るようにします。
@@ -176,6 +176,9 @@ Before we start, if you want to follow the tutorial make sure again, that you ad
 Let's create a very basic menu.
 
 First create a **new room** called **htme_rom_menu**. For this tutorial we are keeping things very basic and we are **not using any views**. Set the **background color** to be **black** and the dimensions of the room to be **800*600**px.
+
+    ??? "800*600"
+    ??? I suggest replace "*" with "x" as it is so in 5_platformer.md.
 
 Add **``obj_htme``** to the room. This object should be created in the first room of every game you create. It is persistent and will exist even when you change the rooms.
 
