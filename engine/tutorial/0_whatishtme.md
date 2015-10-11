@@ -16,8 +16,7 @@
 *GMnet ENGINE* を使って最初のゲームを作りはじめましょう。
 
 
-
-
+---
 ##0. What is GMnet ENGINE?
 
 *GMnet ENGINE* allows you to make multiplayer games in *Game Maker: Studio* with nearly zero knowledge in networking.
