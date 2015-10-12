@@ -7,7 +7,7 @@ GMnet ENGINE と GMnet CORE の違い
 **GMnet CORE** は PUNCH を除く ENGINE のコア部分で、それだけをダウンロードする事はで来ません。
 GMnet ENGINE を GMnet CORE にするには、
 ``htme_init()`` の中の ``self.use_udphp`` を ``false`` にします。
-スクリプト中の ``udphp_`` は削除できます。
+Scripts 中の ``udphp_`` で始まるスクリプトは削除できます。
 GMnet PUNCH を無効にする（もしくは取り除く）と、
 マニュアルページの  **PLUS** がついているページは適用されなくなります。
 
