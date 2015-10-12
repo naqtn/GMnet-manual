@@ -1,6 +1,294 @@
+##7. プレーヤーを追加する
+
+ええはい、ステップ 5 でプレーヤーを既に追加していることは分かっています。
+
+このタイトルが意味しているのは、
+今度は **エンジンにプレーヤを追加する** という事です。
+このステップが終わると、プレーヤーが
+**サーバに接続している全てのプレーヤーの間で同期** するようになります。
+なので、このステップが終わると基本的には（訳補：チュートリアルは）完了します。
+残りはいくらか高度な話題に関するものです。
+
+（訳注：この節の説明で「プレーヤー」という言葉が、
+ゲーム・プログラム中で room に配置される object としてのプレーヤーと、
+ゲーム・プログラムで遊んでいる人としてのプレーヤーの
+両方の意味で使われているので分かりにくい。TODO 見直す。）
+
+
+###create event
+
+プレーヤーを扱えるようにするには最低限の調整を行うだけです。
+**create event の action に新たな Execute Action を追加し** 他のコードの **前に** 置きます。
+
+（訳注：ステップ 5 で作成した初期化コードより前に配置します）
+
+
+次のコードではじめます。（訳注：書き込むのはこれだけでなく後で出てくるコード片を書き連ねていきます。）
+```gml
+mp_sync();
+```
+
+これは **エンジンにこの object を同期することを伝えます** 。
+
+これが一旦クライアントで行われると、
+このインスタンスは（訳補：マルチプレイしている） **他の全てのプレーヤーに送られ** ます。
+
+１つのプレーヤー・インスタンスを room に追加する場合で、
+もし４人のプレーヤーが互いに接続していると、
+それぞれのプレーヤーは４つのプレーヤー・インスタンスを持つことになります。
+
+
+次にエンジンに対して「どの変数をどのように同期するか」を伝える必要があります：
+```gml
+mp_addPosition("Pos",5*room_speed);
+```
+
+これは、
+位置（英語：position）の変数 ``x`` と ``y`` を 5 秒ごとに同期することをエンジンに伝えています。
+``5*room_speed`` は 5 秒を意味します。
+``mp_addPosition`` の最初の引数は“グループ”の名前です。
+この名前は好きなように付けられます。
+（訳注：position を含めるのでここでは "Pos" にしていますが別の文字列でも構いません。）
+
+今追加（訳補：この関数で）したものは **variable group** （変数グループ）と呼びます。
+（訳補：この例の場合、）グループは "Pos" と呼ばれ、
+5 秒ごとに同期され、同期される変数は ``x`` と ``y`` です。
+
+（訳注：同期される変数がインスタンス変数 ``x`` と ``y`` なのは、
+mp_addPosition の仕様としてあらかじめ決まっているためです。
+後で出てくる方法では利用者が変数を指定します。）
+
+
+（訳補：では、）**どのように位置を同期するか** を設定しましょう：
+
+```gml
+mp_setType("Pos",mp_type.SMART);
+```
+
+これは "Pos" variable group の **sync type** （同期タイプ）を変更します。
+**デフォルトの sync type は FAST** です。
+それをこの例では **SMART** に変更しています。
+（訳補：設定可能な）全ての every sync が何をするかを次に一覧します：
+
+
+* **FAST** （デフォルト値。FAST を使用するのであれば ``mp_setType`` を呼ぶ必要は無い）:
+今回の例では、
+もし FAST を選んだなら
+エンジンはプレーヤの位置を 5 秒ごとに **一度だけ** 送信します。
+UDP を通信に使用しているので（訳注：UDP はインターネットで使用される通信方法の一つ。）
+確実に届く保証はありません。
+つまり 5 秒ごとに他のプレーヤーが実際に位置を受け取っているかは分かりません。
+パケット（訳注：一度に送る情報の塊のこと。）は失われるかもしれません。
+とはいえ、FAST はとても... はやいです。
+この節で後ほど FAST を使用します。
+
+
+* **IMPORTANT**:
+IMPORTANT を使用すると、今回の例では同じく 5 秒ごとに位置は同期されます。
+しかし、
+パケットが確実に届くようにする
+ *GMnet ENGINE* の（訳補：中に実装された）特別な方法を使うことになります。
+5 秒ごとに、
+サーバーとクライアントは
+受領したとの返信を返してくるまで
+他のプレーヤに情報をあふれんばかりに送りつけます。
+これ（訳注：受領完了まで送り続ける事）が実際に送られたことを保証する方法です。
+これは通信がだいぶ重くなる操作で
+短い間隔で実行すると接続とフレームレートの両方でラグを引き起こすでしょう。
+
+
+* **SMART**:
+これは IMPORTANT に似ていますが、まし（訳補：な方法）です。
+5 秒ごとに同期する代わりに、
+5 秒ごとに何が変わったか（訳補：という情報）だけを同期します。
+もし x 座標位置だけが変わったとすると、y 座標位置については同期しません。
+位置が全く変わらなかったとすると、同期処理を行いません。
+これは基本的には IMPORTANT の通信に優しい版です。
+
+
+（訳補：このデモでは）比較的大きな間隔で **SMART** を使います。
+後で見るように毎回の step でボタン入力を同期するので、
+位置は（訳補：その）補助の目的で同期するからです。
+同期できていない状態におちいっていない事を保証するためだけに位置を同期します。
+
+（訳注：これは「ボタン入力がきちんと届いていれば、それぞれのプレーヤーのもとで同じ計算がされて、
+位置も結果的に同じ値になるはず。ではあるが、それを補完するために時々位置を確実に送るようにする。」
+という方式を取るという事。同じ事をこの次の段落で説明します。）
+
+**ボタン入力は FAST で同期させます。**
+これは、
+送信パケットは（訳補：FAST なので）いくらか（訳補：宛先に届かずに）失われ、
+ゲームの複雑さ次第ですが
+少しの時間の後にはプレーヤーが完全に異なる状態になりうる事を意味しています。
+そういうことが起きないように**位置を 5 秒ごとにリセットします**。
+
+5 秒ごとにリセットすれば、（訳補：パケットが失われても）
+**何ピクセルかずれるだけ** となります。
+その場合、リセットが起こるたびにプレーヤーが**少しばかりちらちら**するかもしれません。
+**見栄え良くはありません。**
+
+では少しばかり **tolerance range** （許容幅）を加えましょう。
+次のコードで、
+もし場所が**あるべき値からのズレが 20 ピクセルより小さいなら**、
+他のプレーヤーのもとでは**この変更は適用されず**、
+**ちらつきを起こさない**ようになります。
+
+```gml
+mp_tolerance("Pos",20);
+```
+
+よし。位置の設定については終わりました。
+では、**基礎的な Game Maker の物理と描画のための変数** について同期させましょう。:
+
+```gml
+/**
+ * Tell the engine to add the basic drawing variables:
+ * image_alpha,image_angle,image_blend,image_index,image_speed,image_xscale
+ * image_yscale,visible
+ */
+mp_addBuiltinBasic("basicDrawing",15*room_speed);
+mp_setType("basicDrawing",mp_type.SMART);
+
+/**
+ * Tell the engine to add the builtin GameMaker variables:
+ * direction,gravity,gravity_direction,friction,hspeed,vspeed
+ */
+mp_addBuiltinPhysics("basicPhysics",15*room_speed);
+mp_setType("basicPhysics",mp_type.SMART);
+```
+
+（訳：エンジンに対して次の基礎的な描画の変数を追加する。）
+（訳：エンジンに対して次の組み込み（英：builtin）変数を追加する。）
+
+（訳注：以下この文章での「物理（英：physics）」という語は、
+具体的には上記の direction ～ vspeed の変数で扱われる GML の基本的な物理（英：basic physics）を指しています。
+一方、現在の GameMaker: Studio 環境では physics という語で、
+より高度な衝突などを扱う機能を指していることがあります。
+別の範囲なので注意してください。GameMaker: Studio のリファレンスマニュアルで言えば前者は
+[Reference > Movement and Collisions > Movement](http://docs.yoyogames.com/source/dadiospice/002_reference/movement%20and%20collisions/movement/index.html) で、後者は
+[Reference > Physics > Physics Variables](http://docs.yoyogames.com/source/dadiospice/002_reference/physics/physics%20variables/index.html)
+です。ここでは前者のみを扱います。）
+
+
+これらは頻繁にそれほど同期する必要はありません。
+
+（訳注：作業中ですが長いので一旦コミット。）
+
+We don't need to sync them that frequently. If we sync physics to frequently that might look weird and we are only syncing the basic Drawing stuff for the player color (``image_blend``) which doesn't change anyway, and the ``image_xscale`` and ``iamge_angle`` which controls how the player faces, which isn't that critical.
+
+Now we also want to **sync the name**:
+```gml
+mp_add("playerName","name",buffer_string,60*room_speed);
+mp_setType("playerName",mp_type.SMART);
+```
+
+This is using ``mp_add`` to sync our own variables. The syntax is slightly more compelx and we need to do some things to make this work later, but let's just see what we got here:
+* The first argument is again the name of the group
+* In the second argument you specify the **names of the variables** you want to sync, **seperated by commas**. We stored the player name in the "name" variable.
+* The third argument is the **buffer type**. You can find information on which buffer type you need to use on [this manual page](concepts/buffer). **All variables need to have the same buffer type.** ``buffer_string`` simply means that the variable "name" stores a string.
+* The last argument is the syncing interval, just as before.
+
+We decide for a 60 seconds interval, because the name will never change. We could have also used 20 years, that wouldn't make a difference. We only need to make sure the engine syncs it on login and some other critical events, and it does that automatically, no matter what interval we choose. We still need to make it SMART because we need to make sure it REALLY arrived at those events.
+
+Next up are the **controls**. Remember how we stored the button input in seperate variables? Well now you might know why:
+
+```gml
+mp_add("controls","pressed_jump,pressed_left,pressed_right",buffer_bool,1);
+```
+
+The "buffer type" is ``buffer_bool``, because our "pressed\_" variables are booleans. 1/0, true/false.
+
+This will **sync the button input to all players every single frame** no matter what. We don't want to have it SMART or IMPORTANT. **FAST is the way to go**, since there is **no point in checking if the data arrives**, because we are syncing the button input every step anyway.
+
+
+###Some things needed when using ``mp_add``
+
+Since we are using ``mp_add`` to sync our own variables, we need to make some code changes. We need to send the variables to the engine at the beginning of the step, and retrieve the data at the end.  
+The reason fot that is, that in Game Maker there is [no way of getting a variable's content by accessing it via a string](http://gmc.yoyogames.com/index.php?showtopic=646036&hl=). We need to store the values to a map first before the engine can read them. This is not needed for ``mp_addPosition``, ``mp_addBuiltinBasic`` and ``mp_addBuiltinPhysics``, because we hardcoded them.
+
+If you don't know what any of that means what I just said, don't worry. It's complicated.
+
+**The only things you need to know, we will explain them now:**
+
+For every object where you use ``mp_add`` add the following to the **begin step** event:
+
+```gml
+mp_map_syncIn("name",self.name);
+mp_map_syncIn("pressed_jump",self.pressed_jump);
+mp_map_syncIn("pressed_left",self.pressed_left);
+mp_map_syncIn("pressed_right",self.pressed_right);
+```
+
+Replace the names with the names of your synced variables. These are the variables that we created above for our tutorial player.
+
+All changes to these variables need to be made **BEFORE** using these functions. That means you either have to change them in begin step, or call ``mp_map_syncIn`` again after you changed variables. We recommend the first. And that's also what we are going to do in a minute.
+
+In the **end step** event add the following code to retrieve the variables again:
+
+```gml
+self.name = mp_map_syncOut("name", self.name);
+self.pressed_jump = mp_map_syncOut("pressed_jump", self.pressed_jump);
+self.pressed_left = mp_map_syncOut("pressed_left", self.pressed_left);
+self.pressed_right = mp_map_syncOut("pressed_right", self.pressed_right);
+```
+
+###Setting up controls for synchonization
+
+Last thing we need to do, is to **move this code out of the step event** we created earlier:
+```gml
+self.pressed_jump = keyboard_check(vk_space);
+self.pressed_left = keyboard_check(vk_left);
+self.pressed_right = keyboard_check(vk_right);
+```
+
+**Simply remove it**. In begin step, **add the following code** **before** the other code:
+
+```gml
+if (htme_isLocal()) {
+    self.pressed_jump = keyboard_check(vk_space);
+    self.pressed_left = keyboard_check(vk_left);
+    self.pressed_right = keyboard_check(vk_right);
+}
+```
+
+It should now look like this:
+
+```gml
+if (htme_isLocal()) {
+    self.pressed_jump = keyboard_check(vk_space);
+    self.pressed_left = keyboard_check(vk_left);
+    self.pressed_right = keyboard_check(vk_right);
+}
+mp_map_syncIn("name",self.name);
+mp_map_syncIn("pressed_jump",self.pressed_jump);
+mp_map_syncIn("pressed_left",self.pressed_left);
+mp_map_syncIn("pressed_right",self.pressed_right);
+```
+
+All the code we just pasted in begin step does, is **check if this is the instance that was locally created** and then **writes the button input of the players into the variables**.
+
+This way when we have 4 players, we only move the instance we control, the instance we locally created. The ``self.pressed_jump...`` variables will be changed by the other 3 players for the rest of the three instances.
+
+**Look at the following table from the view of player 1:**
+
+| Instance/Player | Controlled via buttons | Controlled via engine      |
+| --------------- | ---------------------- | -------------------------- |
+| Ours / Player 1 | Yes                    | No                         |
+| Player 2'   s   | No                     | Yes, buttons from Player 2 |
+| Player 3'   s   | No                     | Yes, buttons from Player 3 |
+| Player 4'   s   | No                     | Yes, buttons from Player 4 |
+
+###Test
+Fire up two games and create a server / connect to 127.0.0.1.
+
+You should now see both players, **and should see that we now have a multiplayer platformer.**
+
+---
 ##7. Adding a player
 
 Okay, okay, I know we already added a player in Step 5.
+
+    ??? How about making a link as [in Step 5](tutorial/5_platformer) ?
 
 What this title means, is simply that we are now **adding the player to the engine**. After this step the player will be **synchronized between all players you connect to your server**.  
 So we are basicly done after this step. The rest of the tutorial is some more advanced stuff.
@@ -15,6 +303,9 @@ mp_sync();
 ```
 
 This will **tell the engine to sync this object**. Once this was created on one client, this instance wil also be **sent to all other players**. 
+
+    ??? "instance wil"
+    ??? "wil" => "will"
 
 If you add one player instance to your room and connect 4 players togther, each player will have four player instances.
 
@@ -35,6 +326,9 @@ mp_setType("Pos",mp_type.SMART);
 ```
 
 This changes the **sync type** to the variable group "Pos". **The default sync type is FAST**. We are changing it to **SMART**. Here is a list of what every sync type does:
+
+    ??? "the **sync type** to the variable group"
+    ??? I suggest to replace "to" with "of"
 
 * **FAST** (default, you don't have to use ``mp_setType`` if you want to use that):
   In our case, if we had chosen FAST, the engine would send the position of our player every 5 seoncds **once**. Since we are using UDP for networking, there is no assurance, that it will actually arrive. That means we don't know if the other players actually get our position every 5 seoncds. The packet could get lost. However, using FAST is very... FAST. You will see when we want to use FAST later in this section.
