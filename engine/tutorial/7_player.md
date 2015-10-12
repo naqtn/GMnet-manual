@@ -23,7 +23,7 @@
 （訳注：ステップ 5 で作成した初期化コードより前に配置します）
 
 
-次のコードではじめます。（訳注：書き込むのはこれだけでなく後で出てくるコード片を書き連ねていきます。）
+次のコードではじめます。（訳注：書き込むのはこれだけでなく後で出てくるコード片を順に書き連ねていきます。）
 ```gml
 mp_sync();
 ```
@@ -161,7 +161,8 @@ mp_setType("basicPhysics",mp_type.SMART);
 （訳：エンジンに対して次の組み込み（英：builtin）変数を追加する。）
 
 （訳注：以下この文章での「物理（英：physics）」という語は、
-具体的には上記の direction ～ vspeed の変数で扱われる GML の基本的な物理（英：basic physics）を指しています。
+具体的には上記の direction ～ vspeed の変数で扱われる
+GML の基本的な物理（英：basic physics）特性を表す変数を指しています。
 一方、現在の GameMaker: Studio 環境では physics という語で、
 より高度な衝突などを扱う機能を指していることがあります。
 別の範囲なので注意してください。GameMaker: Studio のリファレンスマニュアルで言えば前者は
@@ -171,47 +172,100 @@ mp_setType("basicPhysics",mp_type.SMART);
 
 
 これらは頻繁にそれほど同期する必要はありません。
+物理（訳補：特性を表す変数）を頻繁に同期すると奇妙に見えますし、
+描画まわり（訳補：で同期が必要なの）はプレーヤーの色 ``image_blend``
+（これは初期値だけでゲーム中変化しない）と、
+どの方向を向いているかを制御する ``image_xscale`` and ``iamge_angle``
+（これは（訳補：ゲーム進行上）さほど重要ではない）だけですし。
 
-（訳注：作業中ですが長いので一旦コミット。）
 
-We don't need to sync them that frequently. If we sync physics to frequently that might look weird and we are only syncing the basic Drawing stuff for the player color (``image_blend``) which doesn't change anyway, and the ``image_xscale`` and ``iamge_angle`` which controls how the player faces, which isn't that critical.
-
-Now we also want to **sync the name**:
+さて、あと **name を同期** したいですね：
 ```gml
 mp_add("playerName","name",buffer_string,60*room_speed);
 mp_setType("playerName",mp_type.SMART);
 ```
 
-This is using ``mp_add`` to sync our own variables. The syntax is slightly more compelx and we need to do some things to make this work later, but let's just see what we got here:
-* The first argument is again the name of the group
-* In the second argument you specify the **names of the variables** you want to sync, **seperated by commas**. We stored the player name in the "name" variable.
-* The third argument is the **buffer type**. You can find information on which buffer type you need to use on [this manual page](concepts/buffer). **All variables need to have the same buffer type.** ``buffer_string`` simply means that the variable "name" stores a string.
-* The last argument is the syncing interval, just as before.
+（訳注：ここまで同期の対象だったのはあらかじめ GML で定義された変数でした。
+name は [step 5](tutorial/5_platformer) 独自に定義したもので、
+ここからはその場合の説明になります。）
 
-We decide for a 60 seconds interval, because the name will never change. We could have also used 20 years, that wouldn't make a difference. We only need to make sure the engine syncs it on login and some other critical events, and it does that automatically, no matter what interval we choose. We still need to make it SMART because we need to make sure it REALLY arrived at those events.
+これは独自に定義した変数の同期のために ``mp_add`` を使っています。
+書き方は少しばかり複雑になり、さらに、動くようにするには（この後述べますが）もう少し付け加える必要があります。
+その前にまずはここで何をしているかを見て見ましょう：
+* 第１引数は、前の例と同じようにグループの名前です。
+* 第２引数は、同期したい**変数の名前**です。カンマで区切って複数指定できます。
+  プレーヤの名前は "name" 変数に保存してい（訳補：るのでそれを指定し）ます。
+* 第３引数は、 **buffer type** （日：バッファ・タイプ）です。
+  指定できるバッファ・タイプの種類は [このマニュアルページ](concepts/buffer) に述べてあります。
+  （訳注：変数が保持するデータの種類（型）を示す定数。GML の関数 buffer_write とほぼ同じ。）
+  （訳補：一回の mp_add で指定した）**全ての変数は、同じバッファ・タイプでなければなりません**。
+  （訳補：この例で指定した）``buffer_string`` は "name" 変数が文字列を保持している事を意味しています。
+* 最後の引数は、前（訳補：の例）と同じで同期の時間間隔（英：interval）です。
 
-Next up are the **controls**. Remember how we stored the button input in seperate variables? Well now you might know why:
+
+同期間隔は60秒にしました。
+というのは、name は（訳補：このゲームの実装では）決して変化しないからです。
+これを20年にしても違いは有りません。（訳注：次の文でSMARTを指定していて変化が無ければ送信しないので。）
+エンジンがログインと他の重要なイベントの時にだけ同期する、しかもそれは自動的に行われるというのが重要で、
+（訳補：この例では）間隔はいくつにしても構いません。
+
+（訳補：次の ``mp_setType`` 呼び出しでは）
+これらのイベントの時にだけ同期されるように SMART を指定する必要があります。
+
+
+次の話題は**制御**（英：control）です。
+ボタン入力を個別の変数に保存していた事は覚えていますか？
+ここでそれが何故なのか分かるでしょう:
 
 ```gml
 mp_add("controls","pressed_jump,pressed_left,pressed_right",buffer_bool,1);
 ```
 
-The "buffer type" is ``buffer_bool``, because our "pressed\_" variables are booleans. 1/0, true/false.
+バッファ・タイプは``buffer_bool``です。
+なぜならこれらの変数は真偽値（1または0、（訳補：定数で書けば）trueまたはfalse）だからです。
 
-This will **sync the button input to all players every single frame** no matter what. We don't want to have it SMART or IMPORTANT. **FAST is the way to go**, since there is **no point in checking if the data arrives**, because we are syncing the button input every step anyway.
+This will **sync the button input to all players every single frame** no matter what.
+We don't want to have it SMART or IMPORTANT.
+**FAST is the way to go**, since there is **no point in checking if the data arrives**,
+because we are syncing the button input every step anyway.
+
+（訳補：間隔に1を指定しているので、）
+これは**全てのプレーヤに対してフレーム（訳注：ゲームの処理ループの一回）毎に逐一（訳補：入力状態が）どうであれ、
+ボタン入力を同期**します。
+（訳補：mp_type は）SMART や IMPORTANT にはしません。
+**FAST を選択すべきです**
+データが到着したかを確認する場所が無いからです。
+毎回の step でボタン入力をいずれにせよ同期（訳補：しようと）するわけですから。
+
+（訳注：ソースコードでは明示していませんが mp_type はデフォルトの FAST になります。
+ここで述べられているのは「毎フレーム送るのだから、到着を確認してうんぬんする必要が無い」ということです。
+これは「届いていない時に再送処理をしようにも、次のフレームになれば新たに届く。
+届かないとすればそれは通信の障害であって、その場合には再送処理も完遂できない。
+よって FAST でばんばん送ればいい。」という理屈です。）
 
 
-###Some things needed when using ``mp_add``
 
-Since we are using ``mp_add`` to sync our own variables, we need to make some code changes. We need to send the variables to the engine at the beginning of the step, and retrieve the data at the end.  
-The reason fot that is, that in Game Maker there is [no way of getting a variable's content by accessing it via a string](http://gmc.yoyogames.com/index.php?showtopic=646036&hl=). We need to store the values to a map first before the engine can read them. This is not needed for ``mp_addPosition``, ``mp_addBuiltinBasic`` and ``mp_addBuiltinPhysics``, because we hardcoded them.
+###``mp_add`` を使うときに必要な事
 
-If you don't know what any of that means what I just said, don't worry. It's complicated.
+``mp_add`` を（GML で定義されているものでなく）独自の変数に使うので、
+コードの変更をちょっとする必要があります。
+step の開始時にエンジンに変数値を送り、終了時に取り出す必要があります。
 
-**The only things you need to know, we will explain them now:**
+その理由は、
+GameMaker では
+[変数名の文字列で変数の値を取得する方法が無い](http://gmc.yoyogames.com/index.php?showtopic=646036&hl=)からです。
+エンジンが値を読む前に map （訳注：GML に用意されている DS map）に
+まずは値を保存する必要があります。
+これは
+``mp_addPosition``, ``mp_addBuiltinBasic``, ``mp_addBuiltinPhysics`` の場合には必要ありません。
+これらは（訳注：変数名が既知なのでエンジンの中で）ハード・コードされているからです。
 
-For every object where you use ``mp_add`` add the following to the **begin step** event:
+もし何を言っているのか分からなくても心配しないでください。それは複雑なので（訳補：キニスンナ）。
 
+**知っているべきことはただ、今から説明することです：**
+
+``mp_add`` を使う全ての object について、
+**begin step** イベントに次（訳補：のコード）を加える：
 ```gml
 mp_map_syncIn("name",self.name);
 mp_map_syncIn("pressed_jump",self.pressed_jump);
@@ -219,11 +273,16 @@ mp_map_syncIn("pressed_left",self.pressed_left);
 mp_map_syncIn("pressed_right",self.pressed_right);
 ```
 
-Replace the names with the names of your synced variables. These are the variables that we created above for our tutorial player.
+（訳補：もちろん）名前は同期しようとする変数の名前に変えてください。
+これらは、このチュートリアルでの変数です。
 
-All changes to these variables need to be made **BEFORE** using these functions. That means you either have to change them in begin step, or call ``mp_map_syncIn`` again after you changed variables. We recommend the first. And that's also what we are going to do in a minute.
+これらの変数への変更は ``mp_map_syncIn`` の呼び出し**前に**する必要があります。
+つまり、
+変更は begin step の中で行う（訳補：そして上記コードを実行する）か、
+変更したらもう一度 ``mp_map_syncIn`` を呼ぶ必要がある、ということです。
+最初の方法を推奨します。そしてそれがこの後で説明しようとする内容です。
 
-In the **end step** event add the following code to retrieve the variables again:
+**end step** event に次の変数の値取り出すコードを書き加えます：
 
 ```gml
 self.name = mp_map_syncOut("name", self.name);
@@ -232,16 +291,21 @@ self.pressed_left = mp_map_syncOut("pressed_left", self.pressed_left);
 self.pressed_right = mp_map_syncOut("pressed_right", self.pressed_right);
 ```
 
-###Setting up controls for synchonization
 
-Last thing we need to do, is to **move this code out of the step event** we created earlier:
+###同期のための制御（訳補：変数）の設定
+
+最後にやる必要のは、
+以前（訳補：[step 5](tutorial/5_platformer)で）実装した**step eventから次のコードを取り出す**ことです。
+
 ```gml
 self.pressed_jump = keyboard_check(vk_space);
 self.pressed_left = keyboard_check(vk_left);
 self.pressed_right = keyboard_check(vk_right);
 ```
 
-**Simply remove it**. In begin step, **add the following code** **before** the other code:
+**単に取り除いてください**
+（訳補：そして）begin step で、
+他のコードの **前に** **次のコードを追加**します。
 
 ```gml
 if (htme_isLocal()) {
@@ -251,7 +315,7 @@ if (htme_isLocal()) {
 }
 ```
 
-It should now look like this:
+すると（訳補：begin step のコードは全体として）このようになります：
 
 ```gml
 if (htme_isLocal()) {
@@ -265,23 +329,78 @@ mp_map_syncIn("pressed_left",self.pressed_left);
 mp_map_syncIn("pressed_right",self.pressed_right);
 ```
 
-All the code we just pasted in begin step does, is **check if this is the instance that was locally created** and then **writes the button input of the players into the variables**.
+ここで begin step に書いた事はつまり、
+**ローカルで作成されたインスタンスかを検査し** そして
+**プレーヤーのボタン入力を変数に書き込む** ということです。
 
-This way when we have 4 players, we only move the instance we control, the instance we locally created. The ``self.pressed_jump...`` variables will be changed by the other 3 players for the rest of the three instances.
+4人のプレーヤーが居た場合、このようにして
+今（このマシンで）コントロールしているインスタンス、
+別の言い方をすると local に生成したインスタンスだけを（このマシンのボタンで）動かします。
 
-**Look at the following table from the view of player 1:**
+残りの3つのインスタンスについては、
+``self.pressed_jump`` などの変数は他の3人のプレーヤーによって変更されます。
 
-| Instance/Player | Controlled via buttons | Controlled via engine      |
-| --------------- | ---------------------- | -------------------------- |
-| Ours / Player 1 | Yes                    | No                         |
-| Player 2'   s   | No                     | Yes, buttons from Player 2 |
-| Player 3'   s   | No                     | Yes, buttons from Player 3 |
-| Player 4'   s   | No                     | Yes, buttons from Player 4 |
+（訳注：この残りの3つのインスタンスでの、
+ネットワーク越しに送られてきた情報による変数の変更は、
+end step に追加した ``mp_map_syncOut`` 関数呼び出しの行で行われます。）
 
-###Test
-Fire up two games and create a server / connect to 127.0.0.1.
+**プレーヤー1の視点で描いた次の表を見てください**
 
-You should now see both players, **and should see that we now have a multiplayer platformer.**
+| インスタンスは    | ボタンで制御されるか | エンジンで制御されるか           |
+| ----------------- | -------------------- | -------------------------------- |
+| プレーヤー1のもの | はい                 | いいえ                           |
+| プレーヤー2のもの | いいえ               | はい, プレーヤー 2 からのボタンで|
+| プレーヤー3のもの | いいえ               | はい, プレーヤー 3 からのボタンで|
+| プレーヤー4のもの | いいえ               | はい, プレーヤー 4 からのボタンで|
+
+
+（訳注：
+（この部分の考察が正しいのか裏をまだとっていません。TODO 確認する。）
+
+このデモプログラムでは、
+ローカル生成インスタンスとリモート生成インスタンスとで、
+制御変数の書き換えとそれを使った計算のタイミングが若干ずれます。
+コードの動きをその違いに着目して書き出すと次のようになります。
+（表の下向きに時間が流れるものとして書いています。）
+
+| event     | local                                       | remote               |
+|-----------|---------------------------------------------|----------------------|
+|begin step | keyboard_check で取り込み, syncInで書き出し | （実質何も起きない） |
+|step       | pressed_jump など元に速度や座標を計算       | ←同じ               |
+|end step   | （実質何も起きない）                        | syncOut で取り込み   |
+
+この後 draw event が起きると
+
+| event     | local                                        | remote               |
+|-----------|----------------------------------------------|----------------------|
+|draw       | 速度や座標は pressed_jump などを反映している | まだ反映していない   |
+
+という違いがおきます。
+remote の演算は次の step で行われ、両者はそこで同じ状態になります。
+
+したがって、
+「このようにプログラムを組んで draw などで計算結果を利用する場合には、
+計算結果と同期させている変数の両方を使ってはいけない」
+という事が導かれます。
+例えば、pressed_jump を draw で使うのなら、
+step でさらに別の変数に移し変えるようにする必要があるでしょう。
+
+もっともこれは GMnet 利用に限った注意事項ではなく、
+[リファレンスの Events 中 Event Order 節](http://docs.yoyogames.com/source/dadiospice/000_using%20gamemaker/events/index.html)
+に書かれているように GML でのイベントの順番は定義されないので、
+「イベントの順番に依存せずに内部状態を書き換える」という一般的注意の一例だといえます。）
+
+###テスト
+ゲーム・プログラムを二つ起動し、
+一つはゲーム・サーバを選択し、
+もう一つはクライアントとして 127.0.0.1 に接続します。
+
+二人のプレーヤーがあらわれ、
+**マルチプレーヤーアクションゲームが完成しているでしょう**。
+
+（訳注：基礎部分の解説はこの項までで終わりました。
+残りの部分は発展的な話題です。）
+
 
 ---
 ##7. Adding a player
@@ -399,6 +518,9 @@ This will **sync the button input to all players every single frame** no matter 
 
 Since we are using ``mp_add`` to sync our own variables, we need to make some code changes. We need to send the variables to the engine at the beginning of the step, and retrieve the data at the end.  
 The reason fot that is, that in Game Maker there is [no way of getting a variable's content by accessing it via a string](http://gmc.yoyogames.com/index.php?showtopic=646036&hl=). We need to store the values to a map first before the engine can read them. This is not needed for ``mp_addPosition``, ``mp_addBuiltinBasic`` and ``mp_addBuiltinPhysics``, because we hardcoded them.
+
+    ??? "The reason fot that is"
+    ??? typo? "fot" => "for"
 
 If you don't know what any of that means what I just said, don't worry. It's complicated.
 
