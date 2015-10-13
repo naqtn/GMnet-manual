@@ -1,6 +1,6 @@
 ##7. プレーヤーを追加する
 
-ええはい、ステップ 5 でプレーヤーを既に追加していることは分かっています。
+ええはい、ステップ 5 でプレーヤーを既に追加したのは分かっています。
 
 このタイトルが意味しているのは、
 今度は **エンジンにプレーヤを追加する** という事です。
@@ -10,70 +10,70 @@
 残りはいくらか高度な話題に関するものです。
 
 （訳注：この節の説明で「プレーヤー」という言葉が、
-ゲーム・プログラム中で room に配置される object としてのプレーヤーと、
-ゲーム・プログラムで遊んでいる人としてのプレーヤーの
-両方の意味で使われているので分かりにくい。TODO 見直す。）
+「ゲーム・プログラムにおいて room に配置される object としてのプレーヤー」の意味と、
+「ゲーム・プログラムで遊んでいる人としてのプレーヤー」
+ないしは「その人の元で動かしているゲーム・プログラム」の少し異なった意味で
+使われている。文脈によって区別は出来るがわかりにくい。
+TODO 見直す。原著者に修正提案？）
 
 
 ###create event
 
-プレーヤーを扱えるようにするには最低限の調整を行うだけです。
-**create event の action に新たな Execute Action を追加し** 他のコードの **前に** 置きます。
+プレーヤーをセットアップするには最低限の調整を行うだけです。
+**create event に新たな Execute Action を追加し** 他のコードの **前に** 置きます。
 
-（訳注：ステップ 5 で作成した初期化コードより前に配置します）
+（訳注：ステップ 5 で作成した初期化処理より前に配置します）
 
 
-次のコードではじめます。（訳注：書き込むのはこれだけでなく後で出てくるコード片を順に書き連ねていきます。）
+次のコードではじめます。（訳注：書き込むのはこれだけでなく後で出てくるコード片を順に書き連ねていくことになります。）
 ```gml
 mp_sync();
 ```
 
 これは **エンジンにこの object を同期することを伝えます** 。
-
-これが一旦クライアントで行われると、
-このインスタンスは（訳補：マルチプレイしている） **他の全てのプレーヤーに送られ** ます。
+この object のインスタンスが作られると、
+そのインスタンスは（訳補：マルチプレイしている） **他の全てのプレーヤーの下に送られ** ます。
 
 １つのプレーヤー・インスタンスを room に追加する場合で、
-もし４人のプレーヤーが互いに接続していると、
+もし４人のプレーヤーが互いに接続しているとすると、
 それぞれのプレーヤーは４つのプレーヤー・インスタンスを持つことになります。
 
 
-次にエンジンに対して「どの変数をどのように同期するか」を伝える必要があります：
+次にエンジンに対して「どの変数を、どのように同期するか」を伝える必要があります：
 ```gml
 mp_addPosition("Pos",5*room_speed);
 ```
 
 これは、
-位置（英語：position）の変数 ``x`` と ``y`` を 5 秒ごとに同期することをエンジンに伝えています。
+位置（英語：position）の変数 ``x`` と ``y`` とを 5 秒ごとに同期することをエンジンに伝えています。
 ``5*room_speed`` は 5 秒を意味します。
 ``mp_addPosition`` の最初の引数は“グループ”の名前です。
 この名前は好きなように付けられます。
-（訳注：position を含めるのでここでは "Pos" にしていますが別の文字列でも構いません。）
+（訳注：グループに position を含めるのでここでは "Pos" にしていますが別の文字列でも構いません。）
 
-今追加（訳補：この関数で）したものは **variable group** （変数グループ）と呼びます。
-（訳補：この例の場合、）グループは "Pos" と呼ばれ、
+（訳補：この関数で）今追加したものは**変数グループ**（英語：variable group）と呼ばれるものです。
+（訳補：この例の場合、）グループの名前は "Pos" で、
 5 秒ごとに同期され、同期される変数は ``x`` と ``y`` です。
 
 （訳注：同期される変数がインスタンス変数 ``x`` と ``y`` なのは、
-mp_addPosition の仕様としてあらかじめ決まっているためです。
+mp_addPosition の仕様としてあらかじめそのように決まっているからです。
 後で出てくる方法では利用者が変数を指定します。）
 
 
-（訳補：では、）**どのように位置を同期するか** を設定しましょう：
+（訳補：では、）位置を **どのように同期するか** を設定しましょう：
 
 ```gml
 mp_setType("Pos",mp_type.SMART);
 ```
 
-これは "Pos" variable group の **sync type** （同期タイプ）を変更します。
-**デフォルトの sync type は FAST** です。
+これは変数グループ "Pos" の**同期タイプ**（英語：sync type）を変更します。
+**デフォルトは FAST** で、
 それをこの例では **SMART** に変更しています。
-（訳補：設定可能な）全ての every sync が何をするかを次に一覧します：
+（訳補：設定可能な）それぞれの同期タイプが何をするかを次に一覧します：
 
 
 * **FAST** （デフォルト値。FAST を使用するのであれば ``mp_setType`` を呼ぶ必要は無い）:
-今回の例では、
-もし FAST を選んだなら
+今回の例で FAST を選んだなら、
 エンジンはプレーヤの位置を 5 秒ごとに **一度だけ** 送信します。
 UDP を通信に使用しているので（訳注：UDP はインターネットで使用される通信方法の一つ。）
 確実に届く保証はありません。
@@ -85,49 +85,54 @@ UDP を通信に使用しているので（訳注：UDP はインターネット
 
 * **IMPORTANT**:
 IMPORTANT を使用すると、今回の例では同じく 5 秒ごとに位置は同期されます。
-しかし、
+しかし
 パケットが確実に届くようにする
  *GMnet ENGINE* の（訳補：中に実装された）特別な方法を使うことになります。
 5 秒ごとに、
 サーバーとクライアントは
-受領したとの返信を返してくるまで
-他のプレーヤに情報をあふれんばかりに送りつけます。
-これ（訳注：受領完了まで送り続ける事）が実際に送られたことを保証する方法です。
+（訳補：通信相手が）受領したとの返信を返してくるまで
+情報をあふれんばかりに送りつけます。
+これ（訳注：受領完了の受領まで送り続ける事）が確実に送られたことを保証する方法です。
 これは通信がだいぶ重くなる操作で
-短い間隔で実行すると接続とフレームレートの両方でラグを引き起こすでしょう。
+短い間隔で実行すると接続とフレーム・レートの両方で延滞（英:lag, ラグ）を引き起こすでしょう。
 
 
 * **SMART**:
 これは IMPORTANT に似ていますが、まし（訳補：な方法）です。
 5 秒ごとに同期する代わりに、
-5 秒ごとに何が変わったか（訳補：という情報）だけを同期します。
+5 秒ごとに変化したものだけを同期します。
 もし x 座標位置だけが変わったとすると、y 座標位置については同期しません。
 位置が全く変わらなかったとすると、同期処理を行いません。
 これは基本的には IMPORTANT の通信に優しい版です。
 
 
-（訳補：このデモでは）比較的大きな間隔で **SMART** を使います。
+（訳補：このデモでは）比較的大きな時間間隔で **SMART** を使います。
 後で見るように毎回の step でボタン入力を同期するので、
 位置は（訳補：その）補助の目的で同期するからです。
 同期できていない状態におちいっていない事を保証するためだけに位置を同期します。
 
-（訳注：これは「ボタン入力がきちんと届いていれば、それぞれのプレーヤーのもとで同じ計算がされて、
-位置も結果的に同じ値になるはず。ではあるが、それを補完するために時々位置を確実に送るようにする。」
-という方式を取るという事。同じ事をこの次の段落で説明します。）
+（訳注：これは「ボタン入力がきちんと届いていれば、それぞれのプレーヤーのもとで同じ移動計算がされて、
+結果的に位置も同じ値になるはず。ではあるが、それを補完するために時々位置を確実に送るようにする。」
+という方式を取るという事です。今述べたことと同じ内容を次の段落で説明します。）
 
 **ボタン入力は FAST で同期させます。**
 これは、
-送信パケットは（訳補：FAST なので）いくらか（訳補：宛先に届かずに）失われ、
+送信パケットは（訳補：FAST なので）いくらか（訳補：宛先に届かずに）失われて、
 ゲームの複雑さ次第ですが
 少しの時間の後にはプレーヤーが完全に異なる状態になりうる事を意味しています。
 そういうことが起きないように**位置を 5 秒ごとにリセットします**。
+
+（訳注：不達が起きると例えば、
+プレーヤーがぎりぎりジャンプに成功したのに、通信先では失敗するという計算結果になる、ということが起こります。
+この方法は「そうなってしまうのは仕方ないとして、位置を設定しなおして復活させる措置を取る」ということです。）
+
 
 5 秒ごとにリセットすれば、（訳補：パケットが失われても）
 **何ピクセルかずれるだけ** となります。
 その場合、リセットが起こるたびにプレーヤーが**少しばかりちらちら**するかもしれません。
 **見栄え良くはありません。**
 
-では少しばかり **tolerance range** （許容幅）を加えましょう。
+では少しばかり **tolerance range** （日：許容幅）を加えましょう。
 次のコードで、
 もし場所が**あるべき値からのズレが 20 ピクセルより小さいなら**、
 他のプレーヤーのもとでは**この変更は適用されず**、
@@ -138,7 +143,7 @@ mp_tolerance("Pos",20);
 ```
 
 よし。位置の設定については終わりました。
-では、**基礎的な Game Maker の物理と描画のための変数** について同期させましょう。:
+では、**基礎的な Game Maker の物理と描画のための変数** についても同期させましょう：
 
 ```gml
 /**
@@ -160,12 +165,13 @@ mp_setType("basicPhysics",mp_type.SMART);
 （訳：エンジンに対して次の基礎的な描画の変数を追加する。）
 （訳：エンジンに対して次の組み込み（英：builtin）変数を追加する。）
 
-（訳注：以下この文章での「物理（英：physics）」という語は、
+（訳注：以下の文章での「物理（英：physics）」という語は、
 具体的には上記の direction ～ vspeed の変数で扱われる
 GML の基本的な物理（英：basic physics）特性を表す変数を指しています。
 一方、現在の GameMaker: Studio 環境では physics という語で、
-より高度な衝突などを扱う機能を指していることがあります。
-別の範囲なので注意してください。GameMaker: Studio のリファレンスマニュアルで言えば前者は
+より高度な衝突検出などを扱う機能を指していることがあります。
+両者は別の範囲なので注意してください。
+GameMaker: Studio のリファレンスマニュアルで言えば前者は
 [Reference > Movement and Collisions > Movement](http://docs.yoyogames.com/source/dadiospice/002_reference/movement%20and%20collisions/movement/index.html) で、後者は
 [Reference > Physics > Physics Variables](http://docs.yoyogames.com/source/dadiospice/002_reference/physics/physics%20variables/index.html)
 です。ここでは前者のみを扱います。）
@@ -173,9 +179,9 @@ GML の基本的な物理（英：basic physics）特性を表す変数を指し
 
 これらは頻繁にそれほど同期する必要はありません。
 物理（訳補：特性を表す変数）を頻繁に同期すると奇妙に見えますし、
-描画まわり（訳補：で同期が必要なの）はプレーヤーの色 ``image_blend``
-（これは初期値だけでゲーム中変化しない）と、
-どの方向を向いているかを制御する ``image_xscale`` and ``iamge_angle``
+描画まわり（訳補：で同期が必要なの）はプレーヤーの色の ``image_blend``
+（これは（訳補：create 時に決定してゲーム中には）変化しない）と、
+どの方向を向いているかを制御する ``image_xscale`` と ``iamge_angle``
 （これは（訳補：ゲーム進行上）さほど重要ではない）だけですし。
 
 
@@ -189,7 +195,7 @@ mp_setType("playerName",mp_type.SMART);
 name は [step 5](tutorial/5_platformer) 独自に定義したもので、
 ここからはその場合の説明になります。）
 
-これは独自に定義した変数の同期のために ``mp_add`` を使っています。
+独自に定義した変数の同期のために ``mp_add`` を使っています。
 書き方は少しばかり複雑になり、さらに、動くようにするには（この後述べますが）もう少し付け加える必要があります。
 その前にまずはここで何をしているかを見て見ましょう：
 * 第１引数は、前の例と同じようにグループの名前です。
@@ -197,17 +203,18 @@ name は [step 5](tutorial/5_platformer) 独自に定義したもので、
   プレーヤの名前は "name" 変数に保存してい（訳補：るのでそれを指定し）ます。
 * 第３引数は、 **buffer type** （日：バッファ・タイプ）です。
   指定できるバッファ・タイプの種類は [このマニュアルページ](concepts/buffer) に述べてあります。
-  （訳注：変数が保持するデータの種類（型）を示す定数。GML の関数 buffer_write とほぼ同じ。）
-  （訳補：一回の mp_add で指定した）**全ての変数は、同じバッファ・タイプでなければなりません**。
+  （訳注：変数が保持するデータの種類（型）を示す定数。GML の関数 buffer_write 等で使用されるものを流用。）
+  （訳補：一回の mp_add でカンマ区切りで指定する）**全ての変数は、同じバッファ・タイプでなければなりません**。
   （訳補：この例で指定した）``buffer_string`` は "name" 変数が文字列を保持している事を意味しています。
-* 最後の引数は、前（訳補：の例）と同じで同期の時間間隔（英：interval）です。
+* 最後の引数は、以前と同じで同期の時間間隔（英：interval、インターバル）です。
 
 
 同期間隔は60秒にしました。
-というのは、name は（訳補：このゲームの実装では）決して変化しないからです。
-これを20年にしても違いは有りません。（訳注：次の文でSMARTを指定していて変化が無ければ送信しないので。）
-エンジンがログインと他の重要なイベントの時にだけ同期する、しかもそれは自動的に行われるというのが重要で、
-（訳補：この例では）間隔はいくつにしても構いません。
+というのは、name は（訳補：このゲームの実装では create 時に決定された後は）決して変化しないからです。
+これを20年にしても違いは有りません。（訳注：mp_add の次の文でSMARTを指定していて変化が無ければ送信しないので。）
+間隔をいくつにしたとしても、
+エンジンがログイン時（訳注：内部処理で言えばインスタンス生成）と他の重要なイベントの時に同期処理をし、
+しかもそれは自動的に行われます。
 
 （訳補：次の ``mp_setType`` 呼び出しでは）
 これらのイベントの時にだけ同期されるように SMART を指定する必要があります。
@@ -224,20 +231,15 @@ mp_add("controls","pressed_jump,pressed_left,pressed_right",buffer_bool,1);
 バッファ・タイプは``buffer_bool``です。
 なぜならこれらの変数は真偽値（1または0、（訳補：定数で書けば）trueまたはfalse）だからです。
 
-This will **sync the button input to all players every single frame** no matter what.
-We don't want to have it SMART or IMPORTANT.
-**FAST is the way to go**, since there is **no point in checking if the data arrives**,
-because we are syncing the button input every step anyway.
-
 （訳補：間隔に1を指定しているので、）
 これは**全てのプレーヤに対してフレーム（訳注：ゲームの処理ループの一回）毎に逐一（訳補：入力状態が）どうであれ、
 ボタン入力を同期**します。
 （訳補：mp_type は）SMART や IMPORTANT にはしません。
-**FAST を選択すべきです**
-データが到着したかを確認する場所が無いからです。
+**FAST を選択すべきです**。
+データが到着したかを確認する処理段階が無いからです。
 毎回の step でボタン入力をいずれにせよ同期（訳補：しようと）するわけですから。
 
-（訳注：ソースコードでは明示していませんが mp_type はデフォルトの FAST になります。
+（訳注：ソースコードでは明示していませんが "controls" グループの mp_type はデフォルトの FAST になります。
 ここで述べられているのは「毎フレーム送るのだから、到着を確認してうんぬんする必要が無い」ということです。
 これは「届いていない時に再送処理をしようにも、次のフレームになれば新たに届く。
 届かないとすればそれは通信の障害であって、その場合には再送処理も完遂できない。
@@ -254,18 +256,18 @@ step の開始時にエンジンに変数値を送り、終了時に取り出す
 その理由は、
 GameMaker では
 [変数名の文字列で変数の値を取得する方法が無い](http://gmc.yoyogames.com/index.php?showtopic=646036&hl=)からです。
-エンジンが値を読む前に map （訳注：GML に用意されている DS map）に
+エンジンが値を読む前に map （訳注：GMnet が内部で管理している GML に用意されている [DS map](http://docs.yoyogames.com/source/dadiospice/002_reference/data%20structures/ds%20maps/index.html) のこと。）に
 まずは値を保存する必要があります。
 これは
 ``mp_addPosition``, ``mp_addBuiltinBasic``, ``mp_addBuiltinPhysics`` の場合には必要ありません。
-これらは（訳注：変数名が既知なのでエンジンの中で）ハード・コードされているからです。
+（訳注：変数名が既知なのでエンジンの中で）ハード・コードされているからです。
 
-もし何を言っているのか分からなくても心配しないでください。それは複雑なので（訳補：キニスンナ）。
+ここで何を言っているのか分からなくても心配しないでください。それは複雑なので（訳補：キニスンナ）。
 
-**知っているべきことはただ、今から説明することです：**
+**知っているべきことはただ、今から説明する（訳補：２つの）ことです：**
 
-``mp_add`` を使う全ての object について、
-**begin step** イベントに次（訳補：のコード）を加える：
+（訳補：その１）``mp_add`` を使う全ての object について、
+**begin step** イベントに次を加える：
 ```gml
 mp_map_syncIn("name",self.name);
 mp_map_syncIn("pressed_jump",self.pressed_jump);
@@ -282,7 +284,7 @@ mp_map_syncIn("pressed_right",self.pressed_right);
 変更したらもう一度 ``mp_map_syncIn`` を呼ぶ必要がある、ということです。
 最初の方法を推奨します。そしてそれがこの後で説明しようとする内容です。
 
-**end step** event に次の変数の値取り出すコードを書き加えます：
+（訳補：その２）**end step** event に次の変数の値取り出すコードを書き加える：
 
 ```gml
 self.name = mp_map_syncOut("name", self.name);
@@ -294,7 +296,7 @@ self.pressed_right = mp_map_syncOut("pressed_right", self.pressed_right);
 
 ###同期のための制御（訳補：変数）の設定
 
-最後にやる必要のは、
+最後に必要なのは
 以前（訳補：[step 5](tutorial/5_platformer)で）実装した**step eventから次のコードを取り出す**ことです。
 
 ```gml
@@ -304,8 +306,7 @@ self.pressed_right = keyboard_check(vk_right);
 ```
 
 **単に取り除いてください**
-（訳補：そして）begin step で、
-他のコードの **前に** **次のコードを追加**します。
+（訳補：そして）begin step の他のコードの **前に**、**次のコードを追加**します。
 
 ```gml
 if (htme_isLocal()) {
@@ -329,33 +330,37 @@ mp_map_syncIn("pressed_left",self.pressed_left);
 mp_map_syncIn("pressed_right",self.pressed_right);
 ```
 
-ここで begin step に書いた事はつまり、
+ここで begin step の最初に書いた事はつまり、
 **ローカルで作成されたインスタンスかを検査し** そして
 **プレーヤーのボタン入力を変数に書き込む** ということです。
 
+（訳注：ここでの「ローカル」はネットワーク・プログラミングで言うところの
+「通信をしているこちら側、今このプログラムを動かしている側」という意味です。
+対義語は通信相手を指す「リモート」です。）
+
 4人のプレーヤーが居た場合、このようにして
-今（このマシンで）コントロールしているインスタンス、
-別の言い方をすると local に生成したインスタンスだけを（このマシンのボタンで）動かします。
+今（訳補：このマシンで）制御しているインスタンス、
+別の言い方をすると local に生成したインスタンスだけを（訳補：このマシンのボタンで）動かします。
 
 残りの3つのインスタンスについては、
 ``self.pressed_jump`` などの変数は他の3人のプレーヤーによって変更されます。
 
 （訳注：この残りの3つのインスタンスでの、
 ネットワーク越しに送られてきた情報による変数の変更は、
-end step に追加した ``mp_map_syncOut`` 関数呼び出しの行で行われます。）
+すでに ``end step`` に追加した ``mp_map_syncOut`` 関数呼び出しの行で行われます。）
 
 **プレーヤー1の視点で描いた次の表を見てください**
 
-| インスタンスは    | ボタンで制御されるか | エンジンで制御されるか           |
-| ----------------- | -------------------- | -------------------------------- |
-| プレーヤー1のもの | はい                 | いいえ                           |
-| プレーヤー2のもの | いいえ               | はい, プレーヤー 2 からのボタンで|
-| プレーヤー3のもの | いいえ               | はい, プレーヤー 3 からのボタンで|
-| プレーヤー4のもの | いいえ               | はい, プレーヤー 4 からのボタンで|
+| インスタンスは    | ボタンで制御されるか | エンジンで制御されるか             |
+| ----------------- | -------------------- | ---------------------------------- |
+| プレーヤー1のもの | はい                 | いいえ                             |
+| プレーヤー2のもの | いいえ               | はい（プレーヤー 2 からのボタンで）|
+| プレーヤー3のもの | いいえ               | はい（プレーヤー 3 からのボタンで）|
+| プレーヤー4のもの | いいえ               | はい（プレーヤー 4 からのボタンで）|
 
 
 （訳注：
-（この部分の考察が正しいのか裏をまだとっていません。TODO 確認する。）
+（この訳注の考察が正しいのか裏をまだとっていません。TODO 確認する。）
 
 このデモプログラムでは、
 ローカル生成インスタンスとリモート生成インスタンスとで、
@@ -363,32 +368,32 @@ end step に追加した ``mp_map_syncOut`` 関数呼び出しの行で行われ
 コードの動きをその違いに着目して書き出すと次のようになります。
 （表の下向きに時間が流れるものとして書いています。）
 
-| event     | local                                       | remote               |
+| event     | local インスタンスの動作                    | remote インスタンスの動作 |
 |-----------|---------------------------------------------|----------------------|
 |begin step | keyboard_check で取り込み, syncInで書き出し | （実質何も起きない） |
 |step       | pressed_jump など元に速度や座標を計算       | ←同じ               |
 |end step   | （実質何も起きない）                        | syncOut で取り込み   |
 
-この後 draw event が起きると
+この後 ``draw event`` が起きると
 
 | event     | local                                        | remote               |
 |-----------|----------------------------------------------|----------------------|
 |draw       | 速度や座標は pressed_jump などを反映している | まだ反映していない   |
 
 という違いがおきます。
-remote の演算は次の step で行われ、両者はそこで同じ状態になります。
+remote の場合の演算は次の step で行われ、両者はそこで同じ状態になります。
 
 したがって、
 「このようにプログラムを組んで draw などで計算結果を利用する場合には、
 計算結果と同期させている変数の両方を使ってはいけない」
-という事が導かれます。
-例えば、pressed_jump を draw で使うのなら、
+という注意事項が導かれます。
+例えば、``pressed_jump`` を draw で使うのなら、
 step でさらに別の変数に移し変えるようにする必要があるでしょう。
 
-もっともこれは GMnet 利用に限った注意事項ではなく、
+もっともこれは GMnet 利用に限った事ではなく、
 [リファレンスの Events 中 Event Order 節](http://docs.yoyogames.com/source/dadiospice/000_using%20gamemaker/events/index.html)
-に書かれているように GML でのイベントの順番は定義されないので、
-「イベントの順番に依存せずに内部状態を書き換える」という一般的注意の一例だといえます。）
+に書かれているように GML でのイベントの処理順は定義されないので、
+「イベントの順番に依存せずに内部状態を書き換え、参照する」という一般的注意の一例だといえます。）
 
 ###テスト
 ゲーム・プログラムを二つ起動し、
@@ -398,7 +403,7 @@ step でさらに別の変数に移し変えるようにする必要があるで
 二人のプレーヤーがあらわれ、
 **マルチプレーヤーアクションゲームが完成しているでしょう**。
 
-（訳注：基礎部分の解説はこの項までで終わりました。
+（訳注：冒頭に書かれていたように、基礎部分の解説はこの項までで終わりました。
 残りの部分は発展的な話題です。）
 
 
@@ -426,6 +431,11 @@ This will **tell the engine to sync this object**. Once this was created on one 
     ??? "instance wil"
     ??? "wil" => "will"
 
+    ??? "This will"..."Once this was"..."this instance"
+    ??? I think there's too many "this" and thease are little bit ambiguous.
+    ??? The first "this" points the code "mp_sync()".
+    ??? Does the second "this" points newly created object instance?
+
 If you add one player instance to your room and connect 4 players togther, each player will have four player instances.
 
 Now we need to tell the engine what variables to sync and how:
@@ -437,6 +447,10 @@ mp_addPosition("Pos",5*room_speed);
 This will tell the engine to sync the position variables ``x`` and ``y`` every 5 seconds. ``5*room_speed`` means 5 seconds. The first argument of ``mp_addPosition`` is the name of group. You can choose that however you want.
 
 What we just added is a so called **variable group**. The group is called "Pos", get's synced every 5 seconds and sync the variables ``x`` and ``y``.
+
+    ??? "is a so called" .. "group is called"
+    ??? Too close two "called"
+    ??? How about : The name of the group is "Pos" and the group is synced ...
 
 Let's set **how the position should be synced**:
 
@@ -453,6 +467,9 @@ This changes the **sync type** to the variable group "Pos". **The default sync t
   In our case, if we had chosen FAST, the engine would send the position of our player every 5 seoncds **once**. Since we are using UDP for networking, there is no assurance, that it will actually arrive. That means we don't know if the other players actually get our position every 5 seoncds. The packet could get lost. However, using FAST is very... FAST. You will see when we want to use FAST later in this section.
 * **IMPORTANT**:
   When using IMPORTANT, in our case the position would still be synced every 5 seoncds. However, we are using a special way in *GMnet ENGINE* to make sure the packet arrives. Every 5 seconds, the server/client will flood the other players with the information, until they respond back, that they got it. That's how we assure the information is actually sent. This is however a pretty traffic heavy operation and using that in too short intervals will cause lagg in both connection and framerate.
+
+    ??? typo? "lagg" => "lag"
+
 * **SMART**:
   This is like IMPORTANT but better. Instead of syncing every 5 seconds, we will only sync every 5 seconds what has changed. If only the x position changed, we are not syncing the y position. If our position has not changed at all, we are not syncing. This is basicly a more traffic-friendly version of IMPORTANT.
 
@@ -522,6 +539,11 @@ The reason fot that is, that in Game Maker there is [no way of getting a variabl
     ??? "The reason fot that is"
     ??? typo? "fot" => "for"
 
+    ??? "We need to store the values to a map first before the engine can read them"
+    ??? I think it's better not to refer to "map",
+    ??? because that map object is a matter of GMnet internal implementation.
+    ??? How about just say "store to engine" ?
+
 If you don't know what any of that means what I just said, don't worry. It's complicated.
 
 **The only things you need to know, we will explain them now:**
@@ -536,6 +558,10 @@ mp_map_syncIn("pressed_right",self.pressed_right);
 ```
 
 Replace the names with the names of your synced variables. These are the variables that we created above for our tutorial player.
+
+    ??? "tutorial player"
+    ??? In some parts of this tutorial, it refers the program as "demo", while here refers as "tutorial".
+    ??? I think that is little bit confusing for readers.
 
 All changes to these variables need to be made **BEFORE** using these functions. That means you either have to change them in begin step, or call ``mp_map_syncIn`` again after you changed variables. We recommend the first. And that's also what we are going to do in a minute.
 
