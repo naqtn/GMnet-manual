@@ -1,8 +1,122 @@
+##8. 二番目の room とドア
+
+これで、簡単なマルチプレーヤーゲームを作るのに必要なほとんど全ての事は知ったことになります。
+
+以降の節は以下のより発展的な話題を使います。といっても、とても難しいという事はありません。
+
+* 複数の room と共にマルチ・プレーヤー・エンジンを使用する
+* マルチ・プレーヤー・エンジンのデータの操作
+
+まず**二番目の room を作り**ましょう。
+単純に ``htme_rom_demo`` を **コピー** して（訳補：``htme_rom_demo2`` と命名し）、壁の配置を少し変えます。
+背景色も変えると良いでしょう。
+**room から壁と ``htme_obj_network_controller`` 以外の全ての object を取り除きます。**
+
+この room にプレーヤーを入らせるには、次の二つの（訳補：問題解決）アプローチがあります。
+
+1. ``htme_rom_demo2`` に新たなプレーヤー・インスタンスを置く。プレーヤー object は persistent にはしない。
+2. プレーヤーインスタンスを persistent にする。
+  Game Maker では persistent object （訳注：persistentを有効に設定した object）は
+  room を変更した後も存在し続ける。
+
+このチュートリアルでは**二番目の**アプローチを使います。
+その理由は、persistent object と（訳補：その）インスタンスがどのように振舞うかも説明したいからです。
+しかし（訳補：説明したいということを別にしても）もし一番目の方法でゲームを作れるのであれば、
+多くの場合、二番目のアプローチも同様に機能するでしょう。
+お勧めは、二番目のアプローチです。
+
+
+（訳補：というわけで）
+**``htme_obj_player`` を persistent に設定します**。
+プレーヤを次の room に移動するようにするのに
+プレーヤー object について必要な事（訳注：変更内容）はこれで全てです。
+
+次に``htme_obj_door`` **object を作り** スプライトに ``htme_spr_door`` を設定します。
+（訳注：このスプライトは GMnet の配布物に添付されています。）
+
+**``htme_obj_player`` との衝突 collsion （日：衝突、コリジョン）イベントを作成** して、
+（訳注：そのアクションとして）次のコードを追加します：
+
+```gml
+///CHECK IF DOOR ENTERED
+var isLocal;
+with (other) {isLocal = htme_isLocal();}
+
+if (isLocal && keyboard_check_pressed(vk_up)) {
+    var dest = htme_rom_demo2;
+    if (room == htme_rom_demo2) dest = htme_rom_demo;
+    room_goto(dest);
+}
+```
+（訳：ドアに入ったかどうか検査）
+
+これはプレーヤーがドアの前に立っている時に、
+（訳補：その）other のインスタンス（これは ``htme_obj_player`` object のインスタンス）が
+ローカルのプレーヤー（訳補：のインスタンス）かどうかを
+（ローカル変数 ``isLocal`` に情報を保存しつつ）判定します。
+
+ローカルのプレーヤー（訳注：つまり操作しているキャラクタ）の場合、room を変更します。
+room は現在の room によって ``htme_rom_demo`` と ``htme_rom_demo2`` を相互に変更します。
+**ドアはそれぞれの room に配置します。**
+
+**これで終わりです。**
+
+クライアントとサーバーを開始し room を変更してみてください。
+あなたが期待するように動作するでしょう。
+もし動かないのであれば、
+プレーヤー object を persistent に設定しているか、
+ドアを両方の room で同じ位置に置いているかを確認してください。
+
+（訳注：この実装では room を変更するだけでプレーヤーの座標はそのままなので、
+ドアはそれぞれの room で同じ座標位置に配置しておく必要があります。）
+
+
+###技術上の話を少々
+
+persistent な object を作るとローカルでのみ persistent になります。
+
+つまり、他のプレーヤーが room を変更すると、
+あなたのゲームの中では（訳補：そのプレーヤーのインスタンスは）存在しなくなります。
+その room にあなたが入ると、あなたのクライアントに
+（そのプレーヤーの情報は）再度送信され、再生成されます。
+
+表にまとめると次のようになります。
+**A によって room 1 で作られたインスタンスについて：**
+
+![表（画像ファイル）](images/2v2.PNG)
+
+後ほど、
+全てのプレーヤーに対してインスタンスが常に見える（存在する）ようにする三番目の筋書き（シナリオ）を導入し、
+この表を拡張します。
+
+
+（訳注：この表は、
+二人のプレーヤー（A, B）が接続している場合に、
+object の persistent の設定状況（縦軸）と、
+それぞれのプレーヤがどちらの room にいま居るか（横軸）の組み合わせで、
+A によって room 1 で作られたインスタンスが見えるかどうかを書いた表。
+
+「Vis. for A?」は 「A から見えるか？」で「×」の欄が「見えている」を意味している。
+（日本の文化では丸を描くところだろうが、原著者は該当チェックの意味で印を書いている。）
+
+persistent ではない場合、
+A にとっては元の room 1 だけで存在していて、2 に移動すると見えない。
+それは B にとっては A と一緒に room 1 にいる時にのみ見える。
+
+persistent にすると、
+A にとっては room を移動しても存在し続ける。
+B にとってはやはり A と一緒の room にいるときにのみ見える。
+）
+
+
+---
 ##8. A second room and doors
 
 Now you know nearly everything needed to make a very simple multiplayer game. 
 
 The next sections will cover the following more advanced, but still not very difficult, topics:
+
+    ??? next ? "from here"?
 
 * Using the multiplayer engine with mutliple rooms
 * Working with the data of the multiplayer engine
@@ -52,8 +166,11 @@ Here is a nice little table **FOR AN INSTANCE CREATED BY A IN ROOM 1**:
 
 We will extend this table later with a third scenrio that makes the instances visible/existent at all time for all players.
 
+    ??? typo "scenrio" => "scenario"
+
 ---
 
 **» Next topic: [Making an overlay that shows the name of connected players](tutorial/9_playerlist)**
 
 « Previous topic: [Adding a player](tutorial/7_player)
+ 

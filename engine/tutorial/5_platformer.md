@@ -94,7 +94,7 @@ if (vspeed < 0) vspeed=vspeed+gravity;
 （訳：これはごく基本的な platformer です。物理演算をこんな風にプログラムしちゃ駄目です！）
 
 見れば分かるように、
-ここではボタンのプレス状態を ``self.pressed`` 変数群に保存してチェックしています。
+ここではボタンのプレス状態を ``self.pressed_jump`` などの変数群にまず保存してから検査しています。
 これは後ほど変更します。
 
 
@@ -116,7 +116,7 @@ if (!place_free(x, y+16)) {
 
 最後に **draw event** で、
 create event で作ったランダムな名前を描画するコードを書きます。
-action に **draw self** を置き、その次にこのコードを書きます：
+action に **draw self** を置き、その次に（訳補：execute code を起き）このコードを書きます：
 
 ```gml
 ///Draw nameplate
