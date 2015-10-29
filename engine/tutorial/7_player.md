@@ -13,7 +13,7 @@
 「ゲーム・プログラムにおいて room に配置される object としてのプレーヤー」の意味と、
 「ゲーム・プログラムで遊んでいる人としてのプレーヤー」
 ないしは「その人の元で動かしているゲーム・プログラム」の少し異なった意味で
-使われている。文脈によって区別は出来るがわかりにくい。
+使われている。文脈によって区別はできるがわかりにくい。
 TODO 見直す。原著者に修正提案？）
 
 
@@ -315,7 +315,7 @@ self.pressed_right = mp_map_syncOut("pressed_right", self.pressed_right);
 ###同期のための制御（訳補：変数）の設定
 
 最後に必要なのは
-以前（訳補：[step 5](tutorial/5_platformer)で）実装した**step eventから次のコードを取り出す**ことです。
+以前（訳補：[step 5](tutorial/5_platformer)で）実装した**step eventから次のコードを移動する**ことです。
 
 ```gml
 self.pressed_jump = keyboard_check(vk_space);
@@ -323,8 +323,8 @@ self.pressed_left = keyboard_check(vk_left);
 self.pressed_right = keyboard_check(vk_right);
 ```
 
-**単に取り除いてください**
-（訳補：そして）begin step の他のコードの **前に**、**次のコードを追加**します。
+（訳補：step event からは）**単に取り除いてください**
+（訳補：そして取り除いたコードを元に）begin step の他のコードの **前に**、**次のコードを追加**します。
 
 ```gml
 if (htme_isLocal()) {
@@ -334,7 +334,8 @@ if (htme_isLocal()) {
 }
 ```
 
-すると（訳補：begin step のコードは全体として）このようになります：
+（訳注：step event から begin step の先頭部で``htme_isLocal()`` で囲ったところ作りそこに移動する、ということ。）
+すると（訳補：**begin step のコード**は全体として）このようになります：
 
 ```gml
 if (htme_isLocal()) {
@@ -405,11 +406,11 @@ remote の場合の演算は次の step で行われ、両者はそこで同じ�
 「このようにプログラムを組んで draw などで計算結果を利用する場合には、
 計算結果と同期させている変数の両方を使ってはいけない」
 という注意事項が導かれます。
-例えば、``pressed_jump`` を draw で使うのなら、
-step でさらに別の変数に移し変えるようにする必要があるでしょう。
+例えば、``pressed_jump`` を draw で使いたいのなら、
+それを直接使うのではなく step でさらに別の変数に移し変えてそれを使うようにする必要があるでしょう。
 
 もっともこれは GMnet 利用に限った事ではなく、
-[リファレンスの Events 中 Event Order 節](http://docs.yoyogames.com/source/dadiospice/000_using%20gamemaker/events/index.html)
+[GMS のリファレンス Events 中 Event Order 節](http://docs.yoyogames.com/source/dadiospice/000_using%20gamemaker/events/index.html)
 に書かれているように GML でのイベントの処理順は定義されないので、
 「イベントの順番に依存せずに内部状態を書き換え、参照する」という一般的注意の一例だといえます。）
 
